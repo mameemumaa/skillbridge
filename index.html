@@ -1,853 +1,1941 @@
+
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkillBridge - Platform แลกเปลี่ยนทักษะและให้คำปรึกษาชั่วคราว</title>
+    <title>SkillBridge CyberNexus - Unified Omni-Consulting Platform & Enterprise Analytics v5.0</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts (Prompt) -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            900: '#030712',
+                            800: '#0f172a',
+                            700: '#1e293b',
+                            600: '#334155',
+                            neon: '#06b6d4',
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
+                            emerald: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Prompt', sans-serif; }
+        body { font-family: 'Prompt', sans-serif; background-color: #030712; color: #f8fafc; overflow-x: hidden; }
+        .cyber-glow { box-shadow: 0 0 25px -5px rgba(6, 182, 212, 0.4); }
+        .cyber-glow-purple { box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.4); }
+        .glass-panel { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .neon-text-glow { text-shadow: 0 0 10px rgba(6, 182, 212, 0.5), 0 0 20px rgba(6, 182, 212, 0.3); }
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(1000%); }
+        }
+        .scanline::after {
+            content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.8), transparent);
+            animation: scanline 4s linear infinite; pointer-events: none;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col relative selection:bg-cyan-500 selection:text-black">
 
-    <!-- Header / Navbar -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2 cursor-pointer" onclick="showView('dashboard')">
-                <div class="bg-indigo-600 text-white font-bold text-xl px-3 py-1 rounded-lg">SB</div>
-                <span class="text-xl font-bold tracking-tight text-slate-900">Skill<span class="text-indigo-600">Bridge</span></span>
+    <!-- Cyberpunk Background Grid Effect -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f293d15_1px,transparent_1px),linear-gradient(to_bottom,#1f293d15_1px,transparent_1px)] bg-[size:4rem_4rem] pointer-events-none z-0"></div>
+
+    <!-- Header / Cyber Navigation -->
+    <header class="glass-panel sticky top-0 z-50 border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between relative">
+            <div class="flex items-center gap-3 cursor-pointer group" onclick="showView('dashboard')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center font-mono font-black text-black text-lg shadow-lg group-hover:scale-105 transition">SB</div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-wider bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">SKILLBRIDGE</span>
+                    <span class="block text-[10px] font-mono tracking-widest text-cyan-400 uppercase">Enterprise Omni-Consulting Hub v5.0 (RBAC & Gateway)[cite: 8]</span>
+                </div>
             </div>
             
-            <!-- Dynamic Right Header Side -->
-            <div id="nav-user-area" class="flex items-center gap-4">
-                <!-- Javascript จะจัดการส่วนนี้ -->
+            <nav class="hidden md:flex items-center gap-3 text-xs font-medium text-slate-300">
+                <button onclick="showView('dashboard')" class="hover:text-cyan-400 transition tracking-wide flex items-center gap-1.5">🌐 เมนทอร์</button>
+                <button onclick="showView('ai-hub')" class="text-purple-400 font-semibold hover:text-purple-300 transition flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-purple-500 animate-ping"></span> AI Nexus</button>
+                <button onclick="showView('learning-dashboard')" class="hover:text-cyan-400 transition tracking-wide flex items-center gap-1.5">📈 แดชบอร์ด</button>
+                <button onclick="showView('bookings')" class="hover:text-cyan-400 transition tracking-wide flex items-center gap-1.5">📅 เซสชัน (<span id="booking-badge-count">1</span>)</button>
+                <button onclick="showView('resource-sharing')" class="hover:text-cyan-400 transition tracking-wide flex items-center gap-1.5">📂 คลังไฟล์</button>
+                <button onclick="showView('advanced-analytics')" class="hover:text-cyan-400 transition tracking-wide flex items-center gap-1.5">📊 สถิติเชิงลึก</button>
+                <!-- RBAC Dynamic Nav Button -->
+                <button id="nav-rbac-btn" onclick="openRBACView()" class="hidden text-amber-400 font-bold hover:text-amber-300 transition flex items-center gap-1 bg-amber-950/40 border border-amber-500/30 px-2.5 py-1.5 rounded-xl">🛡️ RBAC</button>
+            </nav>
+
+            <!-- Navbar Right Actions & Smart Notification Center -->
+            <div id="nav-user-area" class="flex items-center gap-3">
+                <!-- Javascript Injection -->
             </div>
         </div>
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full relative z-10">
         
-        <!-- ==================== VIEW 1: AUTHENTICATION (LOGIN / REGISTER) ==================== -->
-        <section id="auth-view" class="max-w-md mx-auto py-6 hidden">
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden">
-                <div class="flex border-b border-slate-200 bg-slate-50">
-                    <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-3 text-center font-bold text-indigo-600 border-b-2 border-indigo-600">
-                        เข้าสู่ระบบ
-                    </button>
-                    <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-3 text-center font-medium text-slate-500 hover:text-slate-700">
-                        ลงทะเบียนใหม่
-                    </button>
+        <!-- ==================== VIEW 1: AUTHENTICATION ==================== -->
+        <section id="auth-view" class="max-w-md mx-auto py-12 hidden">
+            <div class="glass-panel rounded-3xl p-8 shadow-2xl relative overflow-hidden scanline cyber-glow border-cyan-500/30">
+                <div class="absolute top-0 right-0 p-4 font-mono text-[10px] text-cyan-500/60">[ENTERPRISE_RBAC_ACTIVE]</div>
+                
+                <div class="flex border-b border-slate-800 mb-6 bg-slate-900/60 p-1 rounded-xl">
+                    <button id="tab-login-btn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-center font-bold text-sm text-cyan-400 bg-slate-800 rounded-lg shadow">เข้าสู่ระบบ</button>
+                    <button id="tab-register-btn" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-center font-medium text-sm text-slate-400 hover:text-slate-200">ลงทะเบียน</button>
                 </div>
 
-                <div class="p-6 sm:p-8">
-                    <!-- Login Form -->
-                    <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">อีเมล (Email)</label>
-                            <input type="email" id="login-email" value="sukanya.m@pru.ac.th" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">รหัสผ่าน (Password)</label>
-                            <input type="password" id="login-password" value="123456" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        </div>
-                        <div class="flex items-center justify-between text-xs text-slate-500">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500">
-                                จำข้อมูลการเข้าสู่ระบบ
-                            </label>
-                            <a href="#" class="text-indigo-600 hover:underline">ลืมรหัสผ่าน?</a>
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-md">
-                            เข้าสู่ระบบ
-                        </button>
-                    </form>
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1.5">Username / ชื่อผู้ใช้งาน</label>
+                        <input type="text" id="login-username" value="mameemumaa" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 font-mono transition" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1.5">Neural ID / Email</label>
+                        <input type="email" id="login-email" value="admin@test.com" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 font-mono transition" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-1.5">Access Passcode</label>
+                        <input type="password" id="login-password" value="12345678" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-cyan-400 font-mono transition" required>
+                    </div>
+                    <div class="p-3 rounded-xl bg-cyan-950/30 border border-cyan-500/30 text-[11px] text-cyan-300 font-mono leading-relaxed">
+                        🛡️ หมายเหตุ: บัญชี <strong>mameemumaa</strong> / <strong>admin@test.com</strong> คือบัญชีแอดมินหลังบ้านเท่านั้น บัญชีอื่นจะเข้าสู่ระบบในฐานะผู้ใช้งานทั่วไป (User)
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-extrabold py-3.5 rounded-xl transition shadow-lg tracking-wider text-sm mt-2">
+                        AUTH_ACCESS_GRANTED ⚡
+                    </button>
+                </form>
 
-                    <!-- Register Form -->
-                    <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อ-นามสกุล</label>
-                            <input type="text" id="reg-name" placeholder="เช่น สุกัญญา มันโตกัณฑ์" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">อีเมล (Email)</label>
-                            <input type="email" id="reg-email" placeholder="name@domain.com" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-slate-700 mb-1">รหัสผ่าน</label>
-                            <input type="password" id="reg-password" placeholder="อย่างน้อย 6 ตัวอักษร" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        </div>
-                        <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 text-xs text-indigo-700">
-                            🎉 <strong>สิทธิพิเศษ:</strong> สมาชิกใหม่รับฟรี 2 Time-Credits และรหัสสมาชิกระบบทันที!
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-md">
-                            สร้างบัญชีผู้ใช้
-                        </button>
-                    </form>
-                </div>
+                <form id="register-form" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                    <div>
+                        <label class="block text-xs font-mono text-purple-400 uppercase tracking-wider mb-1.5">ชื่อ-นามสกุลจริง</label>
+                        <input type="text" id="reg-name" placeholder="ชื่อ-นามสกุลของคุณ" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-400 transition" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-purple-400 uppercase tracking-wider mb-1.5">อีเมลเครือข่าย</label>
+                        <input type="email" id="reg-email" placeholder="admin@test.com" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-400 transition" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-purple-400 uppercase tracking-wider mb-1.5">รหัสผ่าน</label>
+                        <input type="password" id="reg-password" placeholder="••••••••" class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-purple-400 transition" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-amber-400 uppercase tracking-wider mb-1.5">เลือกบทบาท (RBAC Role):</label>
+                        <select id="reg-role-select" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-purple-400 font-mono">
+                            <option value="User">🎓 สำหรับผู้เรียน</option>
+                            <option value="Mentor">👨‍🏫 สำหรับผู้สอน</option>
+                        </select>
+                    </div>
+                    <div class="p-3 rounded-xl bg-purple-950/40 border border-purple-500/30 text-xs text-purple-300 font-mono">
+                        🎁 สมาชิกใหม่รับสิทธิ์: <strong>+2 Time-Credits</strong> อัตโนมัติ
+                    </div>
+                    <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-400 hover:to-pink-500 text-white font-extrabold py-3.5 rounded-xl transition shadow-lg tracking-wider text-sm mt-2">
+                        INITIALIZE_ACCOUNT 🚀
+                    </button>
+                </form>
             </div>
         </section>
 
         <!-- ==================== VIEW 2: DASHBOARD & MENTOR DISCOVERY ==================== -->
         <section id="dashboard-view" class="space-y-8">
-            <!-- Hero & Filter Section -->
-            <div class="bg-gradient-to-r from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-6 sm:p-10 text-white shadow-lg">
-                <h1 class="text-2xl sm:text-4xl font-bold mb-3">พัฒนาทักษะด่วน ปรึกษาตัวต่อตัวกับผู้เชี่ยวชาญ</h1>
-                <p class="text-indigo-100 text-sm sm:text-base max-w-2xl mb-6">เลือกเรียนรู้ทักษะที่ต้องการด้วยเงินสด หรือใช้ระบบ Time-Credit แลกเปลี่ยนความรู้ 15-30 นาที</p>
-                
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="search-input" onkeyup="renderMentors()" placeholder="ค้นหาทักษะ ชื่อผู้เชี่ยวชาญ เช่น WMS, Logistics, React, SQL, Python..." class="flex-1 px-4 py-3 rounded-xl text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    <button onclick="renderMentors()" class="bg-slate-900 hover:bg-slate-800 text-white font-medium px-6 py-3 rounded-xl transition">
-                        ค้นหาผู้เชี่ยวชาญ
-                    </button>
+            <!-- Cyber Hero Section -->
+            <div class="glass-panel rounded-3xl p-8 sm:p-12 relative overflow-hidden cyber-glow border-cyan-500/20 flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="max-w-2xl relative z-10">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 text-xs font-mono mb-4">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span> ENTERPRISE OMNI-CONSULTING PLATFORM 2026
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4 text-white">ยกระดับทักษะด้วย <span class="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">AI & เมนทอร์ผู้เชี่ยวชาญ</span></h1>
+                    <p class="text-slate-400 text-sm sm:text-base mb-6 leading-relaxed">ครอบคลุมทั้งธุรกิจ การเงิน กฎหมาย จิตวิทยา เทคโนโลยี และระบบขนส่งโลจิสติกส์ พร้อมอัลกอริทึมเมทริกซ์คำนวณความเหมาะสมอัจฉริยะ</p>
+                    
+                    <div class="flex gap-2 mb-4">
+                        <button onclick="openPreAssessmentModal()" class="bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-500 hover:to-cyan-500 text-white font-bold px-5 py-3 rounded-2xl text-xs font-mono transition shadow-lg flex items-center gap-2">
+                            🧪 ทำแบบทดสอบทักษะก่อนจับคู่ (Pre-Assessment AI Quiz)
+                        </button>
+                    </div>
+
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-slate-500">🔍</span>
+                        <input type="text" id="search-input" onkeyup="renderMentors()" placeholder="ค้นหาเรื่องที่อยากปรึกษา เช่น ภาษี, Apps Script, Supply Chain, React..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl pl-11 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-cyan-400 transition">
+                    </div>
+                </div>
+
+                <!-- Category & Gender Filter Panel -->
+                <div class="glass-panel p-6 rounded-3xl border border-purple-500/30 w-full md:w-80 shrink-0 relative z-10 space-y-4 cyber-glow-purple">
+                    <div class="text-purple-400 font-mono text-xs uppercase">[ตัวกรองความต้องการ]</div>
+                    
+                    <div>
+                        <label class="block text-xs text-slate-400 font-mono mb-1.5">หมวดหมู่เรื่องที่ปรึกษา:</label>
+                        <select id="category-filter" onchange="renderMentors()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-purple-400">
+                            <option value="ALL">🌐 ทุกหมวดหมู่ (All Topics)</option>
+                            <option value="Tech & AI">💻 เทคโนโลยี & ซอฟต์แวร์</option>
+                            <option value="Business & Finance">📊 ธุรกิจ การเงิน & ภาษี</option>
+                            <option value="Logistics & Supply Chain">📦 โลจิสติกส์ & คลังสินค้า</option>
+                            <option value="Mental Health">🧠 สุขภาพจิต & จิตวิทยา</option>
+                            <option value="Law & Rights">⚖️ กฎหมาย & สิทธิ์แรงงาน</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 font-mono mb-1.5">ระบุเพศที่ปรึกษา:</label>
+                        <select id="gender-filter" onchange="renderMentors()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-purple-400">
+                            <option value="ALL">👤 ไม่จำกัดเพศ (Any Gender)</option>
+                            <option value="Male">👨‍💼 ชาย (Male)</option>
+                            <option value="Female">👩‍💼 หญิง (Female)</option>
+                            <option value="LGBTQ+">🏳️‍🌈 LGBTQ+ Friendly</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 font-mono mb-1.5">กรองเฉพาะสถานะ:</label>
+                        <select id="status-filter" onchange="renderMentors()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-purple-400">
+                            <option value="ALL">🟢 สถานะทั้งหมด (All Status)</option>
+                            <option value="ONLINE">⚡ ออนไลน์ตอนนี้ (Online Only)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
+            <!-- ANALYTICS OVERVIEW DASHBOARD -->
+            <div class="glass-panel p-6 sm:p-8 rounded-3xl border-cyan-500/30 space-y-6 cyber-glow">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-800 pb-4">
+                    <div>
+                        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                            <span>📊 แดชบอร์ดสรุปสถิติภาพรวม (Enterprise Analytics Overview)</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 font-mono mt-1">ข้อมูลเชิงสถิติและการวิเคราะห์เพื่อการต่อยอดทางธุรกิจแบบเรียลไทม์</p>
+                    </div>
+                    <div class="bg-cyan-950/60 border border-cyan-500/40 px-4 py-2 rounded-xl text-xs font-mono text-cyan-300">
+                        ⚡ SYSTEM STATUS: <span class="text-emerald-400 font-bold">LIVE & SECURE</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-5 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1">
+                        <span class="text-slate-400 text-xs font-mono block">เซสชันที่จองทั้งหมด (Total Bookings)</span>
+                        <div class="text-3xl font-black text-cyan-400 font-mono">1,428 <span class="text-xs font-normal text-emerald-400">+12% นี้</span></div>
+                    </div>
+                    <div class="p-5 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1">
+                        <span class="text-slate-400 text-xs font-mono block">เมนทอร์ยอดฮิต (Top Rated Mentor)</span>
+                        <div class="text-base font-bold text-white truncate">ดนัย สุขเกษม (Apps Script & WMS)</div>
+                        <span class="text-[10px] text-amber-400 font-mono">★ คะแนนเฉลี่ย 4.9 (148 รีวิว)</span>
+                    </div>
+                    <div class="p-5 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1">
+                        <span class="text-slate-400 text-xs font-mono block">หมวดหมู่ยอดนิยมสูงสุด</span>
+                        <div class="text-base font-bold text-purple-400 truncate">Logistics & Supply Chain (38%)</div>
+                        <span class="text-[10px] text-slate-500 font-mono">รองลงมา Tech & AI (32%)</span>
+                    </div>
+                    <div class="p-5 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1">
+                        <span class="text-slate-400 text-xs font-mono block">อัตราความสำเร็จเซสชัน (Success Rate)</span>
+                        <div class="text-3xl font-black text-emerald-400 font-mono">98.4%</div>
+                        <span class="text-[10px] text-slate-500 font-mono">ประเมินจากผู้ใช้งานจริง</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Filter & Sorting -->
+            <div class="glass-panel p-6 rounded-3xl border-cyan-500/30 space-y-4">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-base text-white flex items-center gap-2">
+                            <span>🎛️ ตัวกรองขั้นสูง & การจัดเรียงรายชื่อ (Advanced Filter & Sorting)</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 font-mono mt-1">ปรับแต่งช่วงราคา ระดับความเชี่ยวชาญ และจัดเรียงลำดับผลลัพธ์ได้ทันที</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full lg:w-auto">
+                        <label class="text-xs font-mono text-cyan-400 whitespace-nowrap">จัดเรียง (Sorting):</label>
+                        <select id="sorting-select" onchange="renderMentors()" class="bg-slate-900 border border-cyan-500/40 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono">
+                            <option value="highest-rated">★ คะแนนรีวิวสูงสุด (Highest Rated)</option>
+                            <option value="price-low-high">💰 ราคาต่ำไปสูง (Price: Low to High)</option>
+                            <option value="most-popular">🔥 จองบ่อยที่สุด (Most Popular)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-slate-800">
+                    <div>
+                        <div class="flex justify-between items-center text-xs font-mono mb-2">
+                            <span class="text-slate-300">ช่วงราคา (Price Range):</span>
+                            <span id="price-slider-label" class="text-cyan-400 font-bold">สูงสุด ฿1,000 บาท</span>
+                        </div>
+                        <input type="range" id="price-range-slider" min="300" max="1000" step="50" value="1000" oninput="updatePriceSliderLabel(); renderMentors();" class="w-full accent-cyan-400 bg-slate-900 rounded-lg cursor-pointer h-2">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                            <span>฿300</span>
+                            <span>฿600</span>
+                            <span>฿1,000</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-mono text-slate-300 mb-2">ระดับความเชี่ยวชาญ (Expertise Level):</label>
+                        <div class="flex gap-2">
+                            <button onclick="setExpertiseLevel('ALL')" id="btn-exp-all" class="flex-1 py-2 rounded-xl text-xs font-mono border border-cyan-400 bg-cyan-950/50 text-cyan-300 transition">ทั้งหมด</button>
+                            <button onclick="setExpertiseLevel('Senior')" id="btn-exp-senior" class="flex-1 py-2 rounded-xl text-xs font-mono border border-slate-700 bg-slate-900 text-slate-400 hover:border-cyan-400 transition">Senior</button>
+                            <button onclick="setExpertiseLevel('Expert')" id="btn-exp-expert" class="flex-1 py-2 rounded-xl text-xs font-mono border border-slate-700 bg-slate-900 text-slate-400 hover:border-cyan-400 transition">Expert</button>
+                            <button onclick="setExpertiseLevel('Elite')" id="btn-exp-elite" class="flex-1 py-2 rounded-xl text-xs font-mono border border-slate-700 bg-slate-900 text-slate-400 hover:border-cyan-400 transition">Elite</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header & Filter Count -->
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-xl font-bold text-slate-900">รายการผู้เชี่ยวชาญในระบบ (Mentors List)</h2>
-                    <p class="text-xs text-slate-500">รวมผู้เชี่ยวชาญกว่า 30 ท่าน พร้อมรีวิวการสอนจริงมากกว่า 50+ รายการ</p>
+                    <h2 class="text-2xl font-bold text-white">รายชื่อผู้เชี่ยวชาญพร้อมให้คำปรึกษา</h2>
+                    <p class="text-xs text-slate-400 font-mono">อัลกอริทึมเมทริกซ์คำนวณความสอดคล้องแบบเรียลไทม์</p>
                 </div>
-                <span class="text-sm font-semibold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg border border-indigo-100 self-start sm:self-auto">
-                    พบ <span id="mentor-count">0</span> รายการ
-                </span>
+                <div class="bg-slate-900/80 border border-slate-800 px-4 py-2 rounded-xl text-xs font-mono text-cyan-400">
+                    MATCHED: [<span id="mentor-count">0</span> คน]
+                </div>
             </div>
 
             <!-- Mentor Grid Container -->
             <div id="mentor-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
 
+        <!-- ==================== VIEW 3: AI HUB & CUSTOM PROMPT ==================== -->
+        <section id="ai-hub-view" class="space-y-8 hidden">
+            <div class="flex items-center justify-between">
+                <button onclick="showView('dashboard')" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 px-4 py-2.5 rounded-xl text-xs font-mono transition flex items-center gap-2 border border-slate-700">
+                    ⬅ ย้อนกลับหน้าหลัก
+                </button>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-8 relative overflow-hidden border-purple-500/30 cyber-glow-purple">
+                <div class="absolute top-0 right-0 p-6 font-mono text-xs text-purple-400 opacity-60">AI_CORE_v5.0_CUSTOM_PROMPT</div>
+                <h2 class="text-3xl font-extrabold text-white mb-2">🧠 AI Nexus & Custom Prompt Engineering</h2>
+                <p class="text-slate-400 text-sm max-w-2xl">ศูนย์กลางปัญญาประดิษฐ์บูรณาการ OpenAI / Gemini API จริง ให้คุณป้อน Custom Input วิเคราะห์ทักษะอิสระ สร้างแผนงาน Roadmap และจับคู่เมนทอร์ได้ทุกหัวข้อตามต้องการ</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- AI Smart Matcher Form -->
+                <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 border-purple-500/20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 font-bold">01</div>
+                        <h3 class="font-bold text-lg text-white">AI Custom Prompt Matcher</h3>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-purple-400 uppercase tracking-wider mb-2">ป้อน Custom Input วิเคราะห์ทักษะอิสระ (ผ่าน Gemini / OpenAI API):</label>
+                        <textarea id="ai-custom-prompt-input" rows="4" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-purple-400 transition" placeholder="ระบุหัวข้ออิสระ เช่น การเขียน Smart Contract บน Ethereum หรือระบบขนส่งคลังสินค้าอัตโนมัติด้วย AGV..."></textarea>
+                    </div>
+                    <button onclick="runAICustomPromptMatcher()" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-2xl transition shadow-lg text-sm tracking-wide">
+                        ประมวลผล Custom Prompt ผ่าน AI API ⚡
+                    </button>
+                    <div id="ai-match-result" class="hidden space-y-3"></div>
+                </div>
+
+                <!-- AI Learning Roadmap Generator -->
+                <div class="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 border-cyan-500/20">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-cyan-500/20 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-bold">02</div>
+                        <h3 class="font-bold text-lg text-white">AI Custom Learning Path Generator</h3>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">ระบุหัวข้อเป้าหมายอิสระ (Custom Topic Input):</label>
+                        <input type="text" id="ai-custom-roadmap-topic" placeholder="เช่น ระบบบริหารคลังสินค้าอัจฉริยะ WMS หรือหัวข้อวิทยานิพนธ์ของคุณ..." class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-cyan-400 transition mb-3">
+                        
+                        <label class="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">หรือเลือกจากหัวข้อแนะนำ:</label>
+                        <select id="ai-skill-select" onchange="document.getElementById('ai-custom-roadmap-topic').value=this.value;" class="w-full bg-slate-900/90 border border-slate-700/80 rounded-2xl p-3 text-xs text-white focus:outline-none focus:border-cyan-400 transition">
+                            <option value="">-- เลือกหัวข้อสำเร็จรูป --</option>
+                            <option value="Automated Material Requisition Document System">Automated Material Requisition Document System (Apps Script & AppSheet)</option>
+                            <option value="Warehouse Management Systems & Logistics">Warehouse Management Systems & Logistics (WMS)</option>
+                            <option value="AI Prompt Engineering & Enterprise Automation">AI Prompt Engineering & Enterprise Automation</option>
+                        </select>
+                    </div>
+                    <button onclick="generateCustomRoadmap()" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-black font-extrabold py-3.5 rounded-2xl transition shadow-lg text-sm tracking-wide">
+                        เจนแผนผัง Roadmap อิสระผ่าน OpenAI / Gemini API 🚀
+                    </button>
+                    <div id="ai-roadmap-result" class="hidden p-5 bg-cyan-950/40 rounded-2xl border border-cyan-500/30 text-xs text-cyan-200 font-mono space-y-2 leading-relaxed"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 4: RBAC & ENTERPRISE AUDIT DASHBOARD ==================== -->
+        <section id="rbac-admin-view" class="space-y-8 hidden">
+            <div class="flex items-center justify-between">
+                <button onclick="showView('dashboard')" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 px-4 py-2.5 rounded-xl text-xs font-mono transition flex items-center gap-2 border border-slate-700">
+                    ⬅ ย้อนกลับหน้าหลัก
+                </button>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-8 relative overflow-hidden border-amber-500/30 cyber-glow">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-500/40 text-amber-400 text-xs font-mono mb-2">
+                            🛡️ ROLE-BASED ACCESS CONTROL (RBAC) & ENTERPRISE AUDIT
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white">หน้าจอจัดการสิทธิ์และตรวจสอบระบบองค์กร</h2>
+                        <p class="text-xs text-slate-400 font-mono mt-1">ควบคุมสิทธิ์การใช้งานระดับ Admin ตรวจสอบ System Audit Log และบริหารข้อพิพาท (Dispute Arbitration)</p>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl font-mono text-xs text-right">
+                        <span class="text-slate-400 block">สิทธิ์บัญชีปัจจุบันของคุณ:</span>
+                        <span id="current-rbac-role-badge" class="text-amber-400 font-bold">🛡️ ADMIN / ENTERPRISE AUDITOR</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-Role Switch Simulator -->
+            <div class="glass-panel p-6 rounded-3xl border-amber-500/30 space-y-4">
+                <div class="text-amber-400 font-mono text-xs uppercase">[Multi-Role Switch Simulator]</div>
+                <h3 class="font-bold text-base text-white">จำลองสิทธิ์การใช้งาน (Multi-Role Switch)</h3>
+                <p class="text-xs text-slate-300">สลับมุมมองเพื่อดูว่าแต่ละบทบาท (User, Mentor, Admin) มีสิทธิ์ในการมองเห็นและจัดการระบบแตกต่างกันอย่างไร</p>
+                <div class="flex flex-wrap gap-3 pt-2">
+                    <button onclick="switchRoleView('User')" class="px-5 py-2.5 rounded-xl text-xs font-mono border border-cyan-500/40 bg-cyan-950/40 text-cyan-300 hover:bg-cyan-900 transition">👤 มุมมองผู้รับคำปรึกษา (User)</button>
+                    <button onclick="switchRoleView('Mentor')" class="px-5 py-2.5 rounded-xl text-xs font-mono border border-purple-500/40 bg-purple-950/40 text-purple-300 hover:bg-purple-900 transition">👨‍🏫 มุมมองผู้ให้คำปรึกษา (Mentor)</button>
+                    <button onclick="switchRoleView('Admin')" class="px-5 py-2.5 rounded-xl text-xs font-mono border border-amber-500/40 bg-amber-950/40 text-amber-300 hover:bg-amber-900 transition">🛡️ มุมมองผู้ดูแลระบบ (Admin)</button>
+                </div>
+            </div>
+
+            <!-- Dynamic RBAC Panel Content -->
+            <div id="rbac-dynamic-content" class="space-y-6">
+                <!-- Javascript Injected based on active RBAC Role -->
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 5: USER LEARNING & GROWTH DASHBOARD ==================== -->
+        <section id="learning-dashboard-view" class="space-y-8 hidden">
+            <div class="flex items-center justify-between">
+                <button onclick="showView('dashboard')" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 px-4 py-2.5 rounded-xl text-xs font-mono transition flex items-center gap-2 border border-slate-700">
+                    ⬅ ย้อนกลับหน้าหลัก
+                </button>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-8 relative overflow-hidden border-cyan-500/30 cyber-glow">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 text-xs font-mono mb-2">
+                            📈 USER LEARNING & GROWTH DASHBOARD
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white">แดชบอร์ดติดตามความก้าวหน้าและการเรียนรู้</h2>
+                        <p class="text-xs text-slate-400 font-mono mt-1">ติดตามสถานะเป้าหมายการเรียนรู้ (Learning Goals) จาก AI Path พร้อมระบบ Checklist และประวัติชั่วโมงให้คำปรึกษาย้อนหลัง</p>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl font-mono text-xs">
+                        <span class="text-slate-400 block">สถานะโปรเจกต์วิทยานิพนธ์/งาน:</span>
+                        <span class="text-cyan-400 font-bold">🚀 Automated Material Requisition System</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 glass-panel p-6 sm:p-8 rounded-3xl space-y-6 border-cyan-500/20">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                            <span>🎯 เป้าหมายการเรียนรู้ (Learning Goals) & Checklist</span>
+                        </h3>
+                        <span class="text-xs font-mono text-cyan-400 bg-cyan-950 px-3 py-1 rounded-full border border-cyan-500/30">ความคืบหน้า 75%</span>
+                    </div>
+                    <p class="text-xs text-slate-400 font-mono">สร้างจาก AI Path Generator สำหรับโปรเจกต์ระบบเบิกจ่ายวัสดุอัตโนมัติบน Enterprise Platform</p>
+                    
+                    <div class="space-y-3" id="checklist-container">
+                        <label class="flex items-start gap-3 p-4 bg-slate-900/90 rounded-2xl border border-slate-800 cursor-pointer hover:border-cyan-400 transition">
+                            <input type="checkbox" checked onchange="updateChecklistProgress()" class="mt-1 w-4 h-4 accent-cyan-400 rounded cursor-pointer">
+                            <div>
+                                <span class="font-bold text-sm text-white line-through text-slate-400">Phase 1: ออกแบบฐานข้อมูลตารางคลังสินค้า (Google Sheets Database Schema & SKU Management)</span>
+                                <span class="block text-[11px] text-slate-500 font-mono mt-0.5">สถานะ: สำเร็จแล้ว (Completed)</span>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-3 p-4 bg-slate-900/90 rounded-2xl border border-slate-800 cursor-pointer hover:border-cyan-400 transition">
+                            <input type="checkbox" checked onchange="updateChecklistProgress()" class="mt-1 w-4 h-4 accent-cyan-400 rounded cursor-pointer">
+                            <div>
+                                <span class="font-bold text-sm text-white line-through text-slate-400">Phase 2: พัฒนาฟังก์ชัน Apps Script สำหรับตัดสต็อกอัตโนมัติและสร้างเอกสาร PDF (Material Requisition Document)</span>
+                                <span class="block text-[11px] text-slate-500 font-mono mt-0.5">สถานะ: สำเร็จแล้ว (Completed)</span>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-3 p-4 bg-slate-900/90 rounded-2xl border border-slate-800 cursor-pointer hover:border-cyan-400 transition">
+                            <input type="checkbox" checked onchange="updateChecklistProgress()" class="mt-1 w-4 h-4 accent-cyan-400 rounded cursor-pointer">
+                            <div>
+                                <span class="font-bold text-sm text-white line-through text-slate-400">Phase 3: เชื่อมต่อหน้า UI บน AppSheet และตั้งค่าระบบแจ้งเตือน Line / Email อัตโนมัติ</span>
+                                <span class="block text-[11px] text-slate-500 font-mono mt-0.5">สถานะ: สำเร็จแล้ว (Completed)</span>
+                            </div>
+                        </label>
+                        <label class="flex items-start gap-3 p-4 bg-slate-900/90 rounded-2xl border border-slate-800 cursor-pointer hover:border-cyan-400 transition">
+                            <input type="checkbox" id="check-item-4" onchange="updateChecklistProgress()" class="mt-1 w-4 h-4 accent-cyan-400 rounded cursor-pointer">
+                            <div>
+                                <span class="font-bold text-sm text-white">Phase 4: ทดสอบระบบจำลอง Error Handling และ Security Audit ร่วมกับเมนทอร์ผู้เชี่ยวชาญ</span>
+                                <span class="block text-[11px] text-cyan-400 font-mono mt-0.5">สถานะ: กำลังดำเนินการ (In Progress)</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 sm:p-8 rounded-3xl space-y-6 border-purple-500/20 flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg text-white mb-2">📊 Session History Analytics</h3>
+                        <p class="text-xs text-slate-400 font-mono mb-4">สถิติชั่วโมงให้คำปรึกษาย้อนหลัง</p>
+                        
+                        <div class="space-y-4 font-mono text-xs">
+                            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-1">
+                                <span class="text-slate-400 block">รวมเวลาให้คำปรึกษาทั้งหมด:</span>
+                                <span class="text-2xl font-black text-purple-400">3.5 ชั่วโมง</span>
+                            </div>
+                            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-1">
+                                <span class="text-slate-400 block">เซสชันที่ปรึกษาสำเร็จ:</span>
+                                <span class="text-2xl font-black text-cyan-400">7 เซสชัน</span>
+                            </div>
+                            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-1">
+                                <span class="text-slate-400 block">เมนทอร์ที่ปรึกษาบ่อยที่สุด:</span>
+                                <span class="text-sm font-bold text-white">ดนัย สุขเกษม (Apps Script & WMS)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="showView('bookings')" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl text-xs transition shadow-lg tracking-wide">
+                        ดูประวัติการจองทั้งหมด 📅
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 6: MY BOOKINGS & HISTORY ==================== -->
+        <section id="bookings-view" class="space-y-8 hidden">
+            <div class="flex items-center justify-between">
+                <button onclick="showView('dashboard')" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 px-4 py-2.5 rounded-xl text-xs font-mono transition flex items-center gap-2 border border-slate-700">
+                    ⬅ ย้อนกลับหน้าหลัก
+                </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 glass-panel p-6 rounded-3xl">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">บันทึกเซสชันและการนัดหมาย (My Bookings)</h2>
+                    <p class="text-xs text-slate-400 font-mono"> Virtual Meeting Room & Payment Gateway Integration</p>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openETaxModal()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs px-4 py-3 rounded-2xl transition shadow-lg tracking-wide flex items-center gap-2">
+                        📄 ออกใบเสร็จ / e-Tax Invoice
+                    </button>
+                    <button onclick="openTopupModal()" class="bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-sm px-5 py-3 rounded-2xl transition shadow-lg tracking-wide flex items-center gap-2">
+                        💳 เติม Time-Credits
+                    </button>
+                </div>
+            </div>
+
+            <div id="bookings-list-container" class="space-y-4"></div>
+        </section>
+
+        <!-- ==================== NEW VIEW 7: RESOURCE & DOCUMENT SHARING ==================== -->
+        <section id="resource-sharing-view" class="space-y-8 hidden">
+            <div class="flex items-center justify-between">
+                <button onclick="showView('dashboard')" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 px-4 py-2.5 rounded-xl text-xs font-mono transition flex items-center gap-2 border border-slate-700">
+                    ⬅ ย้อนกลับหน้าหลัก
+                </button>
+            </div>
+            <div class="glass-panel p-8 rounded-3xl border-cyan-500/30 space-y-6 cyber-glow">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">📂 คลังจัดการไฟล์และแชร์เอกสาร (Resource & Document Sharing)</h2>
+                        <p class="text-xs text-slate-400 font-mono mt-1">พื้นที่เก็บเอกสารประกอบการเรียน สไลด์ หรือลิงก์บันทึกวิดีโอย้อนหลังประจำเซสชัน</p>
+                    </div>
+                    <button onclick="alert('อัปโหลดไฟล์เข้าระบบ Cloud สำเร็จ')" class="bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-4 py-2.5 rounded-xl text-xs transition">📤 อัปโหลดไฟล์ใหม่</button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 font-mono text-xs">
+                    <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
+                        <div class="text-cyan-400 font-bold">📄 Slide_WMS_Architecture_v2.pdf</div>
+                        <div class="text-slate-400 text-[11px]">ขนาด: 4.2 MB • อัปโหลดโดย: ดนัย สุขเกษม</div>
+                        <button onclick="alert('ดาวน์โหลดไฟล์เอกสารสำเร็จ')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-300 py-2 rounded-xl transition">ดาวน์โหลดไฟล์</button>
+                    </div>
+                    <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
+                        <div class="text-purple-400 font-bold">🎥 Recording_Session_AppsScript.mp4</div>
+                        <div class="text-slate-400 text-[11px]">ความยาว: 32 นาที • บันทึกเมื่อ: 02/09/2026</div>
+                        <button onclick="alert('เปิดลิงก์วิดีโอย้อนหลังสำเร็จ')" class="w-full bg-slate-800 hover:bg-slate-700 text-purple-300 py-2 rounded-xl transition">ดูวิดีโอย้อนหลัง</button>
+                    </div>
+                    <div class="p-5 bg-slate-900 rounded-2xl border border-slate-800 space-y-3">
+                        <div class="text-emerald-400 font-bold">📊 SourceCode_AppsScript_Template.gs</div>
+                        <div class="text-slate-400 text-[11px]">ขนาด: 120 KB • สำหรับโปรเจกต์วิทยานิพนธ์</div>
+                        <button onclick="alert('ดาวน์โหลด Source Code สำเร็จ')" class="w-full bg-slate-800 hover:bg-slate-700 text-emerald-300 py-2 rounded-xl transition">ดาวน์โหลด Source Code</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== VIEW 9: MENTOR PERSONAL DASHBOARD ==================== -->
+        <section id="mentor-dashboard-view" class="space-y-8 hidden">
+            <div class="flex items-center justify-between">
+                <button onclick="showView('dashboard')" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 px-4 py-2.5 rounded-xl text-xs font-mono transition flex items-center gap-2 border border-slate-700">
+                    ⬅ กลับหน้าค้นหาเมนทอร์
+                </button>
+                <span class="text-xs font-mono text-purple-400">MENTOR_PORTAL / PERSONAL_DASHBOARD</span>
+            </div>
+
+            <div class="glass-panel rounded-3xl p-8 relative overflow-hidden border-purple-500/30 cyber-glow-purple">
+                <div class="absolute -right-20 -top-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-950/80 border border-purple-500/40 text-purple-400 text-xs font-mono mb-3">
+                            👨‍🏫 MENTOR PERSONAL DASHBOARD
+                        </div>
+                        <h2 class="text-3xl font-extrabold text-white">ยินดีต้อนรับ, <span id="mentor-dashboard-name" class="text-purple-400">Mentor</span></h2>
+                        <p class="text-sm text-slate-400 mt-2">จัดการตารางเวลา เซสชัน รายได้ รีวิว และข้อมูลโปรไฟล์ของคุณได้จากหน้านี้</p>
+                    </div>
+                    <button onclick="showMentorDashboard()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-5 py-3 rounded-2xl text-xs transition shadow-lg">
+                        🔄 รีเฟรชแดชบอร์ด
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="glass-panel p-5 rounded-2xl border-emerald-500/20">
+                    <span class="text-slate-400 text-xs font-mono block">รายได้เดือนนี้</span>
+                    <div id="mentor-income" class="text-3xl font-black text-emerald-400 mt-2">฿0</div>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl border-cyan-500/20">
+                    <span class="text-slate-400 text-xs font-mono block">เซสชันที่ต้องสอน</span>
+                    <div id="mentor-upcoming-sessions" class="text-3xl font-black text-cyan-400 mt-2">0</div>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl border-amber-500/20">
+                    <span class="text-slate-400 text-xs font-mono block">คะแนนรีวิวเฉลี่ย</span>
+                    <div id="mentor-rating" class="text-3xl font-black text-amber-400 mt-2">0.0 ★</div>
+                </div>
+                <div class="glass-panel p-5 rounded-2xl border-purple-500/20">
+                    <span class="text-slate-400 text-xs font-mono block">จำนวนผู้เรียน</span>
+                    <div id="mentor-students" class="text-3xl font-black text-purple-400 mt-2">0</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass-panel p-6 rounded-3xl border-purple-500/20 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-lg text-white">📅 ตารางเซสชันถัดไป</h3>
+                        <button onclick="showView('bookings')" class="text-xs text-cyan-400 hover:text-cyan-300">ดูทั้งหมด</button>
+                    </div>
+                    <div id="mentor-session-list" class="space-y-3"></div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl border-cyan-500/20 space-y-4">
+                    <h3 class="font-bold text-lg text-white">⚙️ จัดการโปรไฟล์ผู้สอน</h3>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800">
+                            <span class="text-xs text-slate-400 font-mono block mb-1">ชื่อผู้สอน</span>
+                            <span id="mentor-profile-name" class="text-sm font-bold text-white">-</span>
+                        </div>
+                        <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800">
+                            <span class="text-xs text-slate-400 font-mono block mb-1">อีเมล</span>
+                            <span id="mentor-profile-email" class="text-sm text-cyan-400 font-mono">-</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="alert('บันทึกการตั้งค่าตารางเวลาเรียบร้อยแล้ว')" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl text-xs">🕒 จัดการเวลาว่าง</button>
+                            <button onclick="alert('เปิดหน้าจัดการเรตราคาสำเร็จ')" class="flex-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-bold py-3 rounded-xl text-xs">💰 ตั้งราคา</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== NEW VIEW 8: ADVANCED LEARNING ANALYTICS ==================== -->
+        <section id="advanced-analytics-view" class="space-y-8 hidden">
+            <div class="flex items-center justify-between">
+                <button onclick="showView('dashboard')" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 px-4 py-2.5 rounded-xl text-xs font-mono transition flex items-center gap-2 border border-slate-700">
+                    ⬅ ย้อนกลับหน้าหลัก
+                </button>
+            </div>
+            <div class="glass-panel p-8 rounded-3xl border-purple-500/30 space-y-6 cyber-glow-purple">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">📊 แดชบอร์ดติดตามผลความก้าวหน้าขั้นสูง (Advanced Learning Analytics)</h2>
+                    <p class="text-xs text-slate-400 font-mono mt-1">กราฟแสดงสถิติเชิงลึก เช่น ชั่วโมงการเรียนสะสม ทักษะที่พัฒนาขึ้น หรือเป้าหมายที่สำเร็จ</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+                    <div class="p-6 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+                        <span class="text-slate-400">ชั่วโมงการเรียนสะสม (Total Hours)</span>
+                        <div class="text-3xl font-black text-cyan-400">14.5 ชม.</div>
+                        <div class="text-[10px] text-emerald-400">+3.5 ชม. ในสัปดาห์นี้</div>
+                    </div>
+                    <div class="p-6 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+                        <span class="text-slate-400">ทักษะที่พัฒนาขึ้น (Skills Gained)</span>
+                        <div class="text-3xl font-black text-purple-400">8 ทักษะ</div>
+                        <div class="text-[10px] text-purple-300">WMS, Apps Script, AppSheet, SQL</div>
+                    </div>
+                    <div class="p-6 bg-slate-900 rounded-2xl border border-slate-800 space-y-2">
+                        <span class="text-slate-400">เป้าหมายวิทยานิพนธ์ (Milestones)</span>
+                        <div class="text-3xl font-black text-emerald-400">3/4 สำเร็จ</div>
+                        <div class="text-[10px] text-slate-400">ใกล้เสร็จสิ้นสมบูรณ์</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-6 mt-12">
-        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500">
-            © 2026 SkillBridge Platform. All rights reserved.
+    <footer class="glass-panel border-t border-slate-800/80 py-8 mt-16 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 font-mono">
+            © 2026 SkillBridge CyberNexus Enterprise Platform. Secure AI Encrypted Connection. All rights reserved.
         </div>
     </footer>
 
-    <!-- Booking Modal -->
-    <div id="booking-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl relative animate-fade-in">
-            <button onclick="closeBookingModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-            
-            <h3 class="text-xl font-bold text-slate-900 mb-1">จองเวลาปรึกษา (Booking Session)</h3>
-            <p class="text-sm text-slate-500 mb-4">ผู้เชี่ยวชาญ: <span id="modal-mentor-name" class="font-semibold text-slate-800">-</span></p>
+    <!-- ==================== MODALS ==================== -->
 
-            <form id="booking-form" onsubmit="handleBookingSubmit(event)">
+    <!-- Mentor Profile Detail Modal -->
+    <div id="mentor-profile-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 animate-fade-in">
+        <div class="glass-panel rounded-3xl max-w-3xl w-full p-8 shadow-2xl relative border-cyan-500/30 cyber-glow max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="closeMentorProfileModal()" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 px-3 py-1.5 rounded-lg text-xs font-mono transition flex items-center gap-1.5 border border-slate-700">
+                    ⬅ ย้อนกลับ
+                </button>
+                <button onclick="closeMentorProfileModal()" class="text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row items-center gap-6 mb-6 pb-6 border-b border-slate-800">
+                <div class="relative">
+                    <img id="profile-modal-avatar" src="" alt="Avatar" class="w-28 h-28 rounded-2xl object-cover border-2 border-cyan-400 shadow-lg bg-slate-900">
+                    <span id="profile-modal-status-dot" class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-slate-900"></span>
+                </div>
+                <div class="text-center sm:text-left flex-1">
+                    <div class="flex items-center justify-center sm:justify-start gap-2 mb-1">
+                        <h3 id="profile-modal-name" class="text-2xl font-extrabold text-white">-</h3>
+                        <span id="profile-modal-gender" class="text-[10px] font-mono bg-purple-950 text-purple-300 px-2.5 py-0.5 rounded border border-purple-500/30">-</span>
+                        <span id="profile-modal-expertise-badge" class="text-[10px] font-mono bg-cyan-950 text-cyan-300 px-2.5 py-0.5 rounded border border-cyan-500/30">-</span>
+                    </div>
+                    <p id="profile-modal-title" class="text-xs text-cyan-400 font-mono mb-2">-</p>
+                    <div id="profile-modal-status-text" class="text-xs font-mono mb-3 font-bold">-</div>
+                    <div class="flex flex-wrap justify-center sm:justify-start gap-2">
+                        <span class="bg-amber-950/40 text-amber-400 border border-amber-500/30 text-xs font-mono px-3 py-1 rounded-full">★ คะแนนเฉลี่ย: <span id="profile-modal-rating">-</span></span>
+                        <span class="bg-slate-900 text-slate-300 border border-slate-700 text-xs font-mono px-3 py-1 rounded-full">💬 จำนวนรีวิว: <span id="profile-modal-total-reviews">-</span> รีวิว</span>
+                        <span class="bg-cyan-950/40 text-cyan-400 border border-cyan-500/30 text-xs font-mono px-3 py-1 rounded-full">💰 <span id="profile-modal-rate">-</span> บาท / 30 นาที</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div>
+                    <h4 class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">ความเชี่ยวชาญ & ทักษะ (Skills)</h4>
+                    <div id="profile-modal-skills" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <!-- MENTOR AVAILABILITY & CALENDAR -->
+                <div class="p-5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 space-y-3">
+                    <h4 class="text-xs font-mono text-cyan-400 uppercase tracking-wider flex items-center justify-between">
+                        <span>📅 ระบบจัดการตารางเวลา & ช่วงเวลาว่าง (Mentor Availability & Calendar)</span>
+                        <span class="text-[10px] text-emerald-400">● อัปเดตแบบเรียลไทม์</span>
+                    </h4>
+                    <p class="text-[11px] text-slate-400">เลือกวันที่ต้องการนัดหมายและคลิกช่วงเวลาว่าง (Slot) ที่สะดวกเพื่อจองคิวปรึกษาได้ทันที</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div>
+                            <label class="block text-[11px] font-mono text-slate-400 mb-1">เลือกวันที่ต้องการนัดหมาย:</label>
+                            <input type="date" id="profile-calendar-date" onchange="renderTimeSlots()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white focus:outline-none focus:border-cyan-400 font-mono transition">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-mono text-slate-400 mb-1">เลือกช่วงเวลา (Time Slots):</label>
+                            <div id="time-slots-container" class="grid grid-cols-2 gap-2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FEATURE 1: REAL-TIME CHAT / MESSAGING -->
+                <div class="p-5 rounded-2xl bg-slate-900/90 border border-purple-500/30 space-y-3">
+                    <h4 class="text-xs font-mono text-purple-400 uppercase tracking-wider flex items-center justify-between">
+                        <span>💬 ระบบแชทแบบเรียลไทม์ (Real-time Chat / Messaging & File Sharing)</span>
+                        <span id="chat-limit-counter" class="text-[10px] text-purple-300">WebSocket / Firebase Connected</span>
+                    </h4>
+                    <div id="chat-messages-box" class="h-36 overflow-y-auto bg-slate-950 p-3 rounded-xl border border-slate-800 space-y-2 text-xs font-mono">
+                        <div class="text-slate-500 text-center">[เริ่มต้นสนทนากับเมนทอร์และส่งไฟล์แนบได้ทันที]</div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="chat-input-msg" placeholder="พิมพ์ข้อความหรือส่งไฟล์..." class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-purple-400 font-mono">
+                        <button onclick="alert('แนบไฟล์เอกสารเข้าแชทสำเร็จ')" class="bg-slate-800 hover:bg-slate-700 text-purple-300 font-bold px-3 py-2 rounded-xl text-xs transition">📎 แนบไฟล์</button>
+                        <button onclick="sendPreConsultationChat()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition">ส่ง ⚡</button>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-mono text-cyan-400 uppercase tracking-wider mb-3">รีวิวจากผู้เรียนจริง</h4>
+                    <div id="profile-modal-reviews-list" class="space-y-3 max-h-48 overflow-y-auto pr-2"></div>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-slate-800 flex justify-end gap-3">
+                <button onclick="closeMentorProfileModal()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-mono transition">ปิดหน้าต่าง</button>
+                <button id="profile-modal-book-btn" onclick="" class="px-6 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold rounded-xl text-xs tracking-wider transition shadow-lg">ยืนยันจองเซสชันที่เลือก ⚡</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="booking-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 animate-fade-in">
+        <div class="glass-panel rounded-3xl max-w-lg w-full p-8 shadow-2xl relative border-cyan-500/30 cyber-glow max-h-[90vh] overflow-y-auto">
+            <button onclick="closeBookingModal()" class="absolute top-6 right-6 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            <h3 class="text-xl font-bold text-white mb-1">ยืนยันการจองและชำระเงินจริง</h3>
+            <p class="text-xs text-slate-400 mb-6 font-mono">ผู้เชี่ยวชาญ: <span id="modal-mentor-name" class="text-cyan-400 font-semibold">-</span></p>
+
+            <form id="booking-form" onsubmit="handleRealPaymentCheckout(event)">
                 <input type="hidden" id="modal-mentor-id">
                 
                 <div class="mb-4">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">เลือกเวลาที่ต้องการปรึกษา (30 นาที)</label>
-                    <select id="booking-time" class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none" required>
+                    <label class="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">เลือกวันที่ต้องการนัดหมาย</label>
+                    <input type="date" id="booking-date" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-cyan-400 font-mono transition" required>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">เลือกช่วงเวลาเซสชัน (30 นาที)</label>
+                    <select id="booking-time" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-3.5 text-sm text-white focus:outline-none focus:border-cyan-400 transition" required>
                         <option value="">-- เลือกช่วงเวลา --</option>
-                        <option value="18:00 - 18:30">วันนี้, 18:00 - 18:30 น.</option>
-                        <option value="19:00 - 19:30">วันนี้, 19:00 - 19:30 น.</option>
-                        <option value="20:00 - 20:30">พรุ่งนี้, 20:00 - 20:30 น.</option>
+                        <option value="09:00 - 09:30 น.">09:00 - 09:30 น. (ช่วงเช้า)</option>
+                        <option value="10:00 - 10:30 น.">10:00 - 10:30 น. (ช่วงเช้า)</option>
+                        <option value="13:00 - 13:30 น.">13:00 - 13:30 น. (ช่วงบ่าย)</option>
+                        <option value="15:00 - 15:30 น.">15:00 - 15:30 น. (ช่วงบ่าย)</option>
+                        <option value="18:00 - 18:30 น.">18:00 - 18:30 น. (ช่วงค่ำ)</option>
+                        <option value="20:00 - 20:30 น.">20:00 - 20:30 น. (ช่วงดึก)</option>
                     </select>
                 </div>
 
+                <!-- FEATURE 9: COUPON & PROMOTION SYSTEM -->
+                <div class="mb-4 p-4 rounded-2xl bg-purple-950/30 border border-purple-500/30 space-y-2">
+                    <label class="block text-xs font-mono text-purple-400 uppercase tracking-wider">ระบบจัดการคูปองและส่วนลด (Coupon & Promotion)</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="coupon-code-input" placeholder="กรอกโค้ดส่วนลด เช่น B2B_CORP_50" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white font-mono uppercase">
+                        <button type="button" onclick="applyCouponCode()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition">ใช้โค้ด</button>
+                    </div>
+                    <div id="coupon-feedback-text" class="text-[11px] text-slate-400 font-mono"></div>
+                </div>
+
+                <!-- Payment Gateway Options -->
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">วิธีชำระเงิน / รูปแบบการแลกเปลี่ยน</label>
-                    <div class="grid grid-cols-2 gap-3">
-                        <label class="border-2 border-slate-200 rounded-xl p-3 flex flex-col cursor-pointer hover:border-indigo-500 has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50">
-                            <input type="radio" name="paymentType" value="CASH" class="sr-only" checked onchange="updatePaymentSummary()">
-                            <span class="font-bold text-sm text-slate-800">เงินสด (Cash)</span>
-                            <span id="modal-cash-rate" class="text-xs text-slate-500 mt-1">฿300 / 30 นาที</span>
+                    <label class="block text-xs font-mono text-cyan-400 uppercase tracking-wider mb-2">เลือกช่องทางชำระเงินจริง (Payment Gateway)</label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <label class="border border-slate-700 rounded-2xl p-3 flex flex-col items-center text-center cursor-pointer hover:border-cyan-400 bg-slate-900/60 has-[:checked]:border-cyan-400 has-[:checked]:bg-cyan-950/40 transition">
+                            <input type="radio" name="paymentGateway" value="PROMPTPAY" class="sr-only" checked onchange="toggleGatewayDetails()">
+                            <span class="text-xl mb-1">📱</span>
+                            <span class="font-bold text-xs text-white">PromptPay QR</span>
                         </label>
-
-                        <label class="border-2 border-slate-200 rounded-xl p-3 flex flex-col cursor-pointer hover:border-indigo-500 has-[:checked]:border-indigo-600 has-[:checked]:bg-indigo-50">
-                            <input type="radio" name="paymentType" value="TIME_CREDIT" class="sr-only" onchange="updatePaymentSummary()">
-                            <span class="font-bold text-sm text-slate-800">Time-Credit</span>
-                            <span class="text-xs text-slate-500 mt-1">ใช้ 1 เครดิตแลกเปลี่ยน</span>
+                        <label class="border border-slate-700 rounded-2xl p-3 flex flex-col items-center text-center cursor-pointer hover:border-cyan-400 bg-slate-900/60 has-[:checked]:border-cyan-400 has-[:checked]:bg-cyan-950/40 transition">
+                            <input type="radio" name="paymentGateway" value="CREDIT_CARD" class="sr-only" onchange="toggleGatewayDetails()">
+                            <span class="text-xl mb-1">💳</span>
+                            <span class="font-bold text-xs text-white">Stripe / Omise</span>
+                        </label>
+                        <label class="border border-slate-700 rounded-2xl p-3 flex flex-col items-center text-center cursor-pointer hover:border-cyan-400 bg-slate-900/60 has-[:checked]:border-cyan-400 has-[:checked]:bg-cyan-950/40 transition">
+                            <input type="radio" name="paymentGateway" value="TIME_CREDIT" class="sr-only" onchange="toggleGatewayDetails()">
+                            <span class="text-xl mb-1">⚡</span>
+                            <span class="font-bold text-xs text-white">Time-Credits</span>
                         </label>
                     </div>
                 </div>
 
-                <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200 text-sm space-y-2">
-                    <div class="flex justify-between text-slate-600">
-                        <span>ยอดรวม (Gross Amount):</span>
-                        <span id="summary-gross" class="font-semibold">฿300</span>
+                <!-- Dynamic Gateway Container -->
+                <div id="gateway-dynamic-box" class="mb-6 p-4 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-mono space-y-3">
+                    <div id="box-promptpay" class="text-center space-y-2">
+                        <div class="text-cyan-400 font-bold">สแกน QR Code ผ่านแอปพลิเคชันธนาคาร</div>
+                        <div class="bg-white p-3 inline-block rounded-xl shadow-inner">
+                            <div class="w-32 h-32 bg-slate-900 flex items-center justify-center text-white text-[10px] text-center p-2 font-mono">
+                                [SIMULATED PROMPTPAY QR] <br>⚡ สแกนจ่ายอัตโนมัติ
+                            </div>
+                        </div>
+                        <div class="text-slate-400 text-[11px]">ยอดชำระ: <span id="pp-amount-text" class="text-cyan-400 font-bold">฿350</span></div>
                     </div>
-                    <div class="flex justify-between text-slate-400 text-xs">
-                        <span>ค่าธรรมเนียมระบบ (Platform Fee 15%):</span>
-                        <span id="summary-fee">฿45</span>
+                    <div id="box-card" class="space-y-3 hidden">
+                        <div class="text-purple-400 font-bold">กรอกข้อมูลบัตรเครดิต/เดบิต (Stripe / Omise Secure)</div>
+                        <input type="text" placeholder="4242 •••• •••• 4242" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" placeholder="MM / YY" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                            <input type="text" placeholder="CVC" class="bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                        </div>
                     </div>
-                    <div class="border-t border-slate-200 pt-2 flex justify-between font-bold text-indigo-700 text-base">
-                        <span>ชำระทั้งหมด:</span>
-                        <span id="summary-net">฿300</span>
+                    <div id="box-credit" class="space-y-2 hidden text-center py-2">
+                        <div class="text-emerald-400 font-bold">หักเครดิตสะสมในบัญชี</div>
+                        <div class="text-slate-300">ยอดคงเหลือของคุณ: <span id="user-credit-balance-text" class="text-cyan-400 font-bold">4</span> Credits (ใช้ 1 เครดิต)</div>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-md">
-                    ยืนยันการจองเซสชัน
+                <div class="bg-slate-900/85 rounded-2xl p-4 mb-6 border border-slate-800 text-xs font-mono space-y-2">
+                    <div class="flex justify-between text-slate-400"><span>ยอดรวม:</span><span id="summary-gross" class="text-white font-bold">฿350</span></div>
+                    <div class="flex justify-between text-slate-500"><span>ค่าธรรมเนียมเกตเวย์ (Secure API):</span><span id="summary-fee">฿0 (Free)</span></div>
+                    <div class="border-t border-slate-800 pt-2 flex justify-between font-bold text-cyan-400 text-sm"><span>ชำระสุทธิ:</span><span id="summary-net">฿350</span></div>
+                </div>
+
+                <button type="submit" class="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-extrabold py-3.5 rounded-2xl transition shadow-lg tracking-wider text-sm">
+                    ดำเนินการชำระเงินจริงและยืนยันนัดหมาย ⚡
                 </button>
             </form>
         </div>
     </div>
 
-    <!-- Review Modal -->
-    <div id="review-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl relative max-h-[80vh] flex flex-col">
-            <button onclick="closeReviewModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
-            
-            <h3 class="text-xl font-bold text-slate-900 mb-1">รีวิวจากผู้เรียนจริง</h3>
-            <p class="text-sm text-slate-500 mb-4">ผู้เชี่ยวชาญ: <span id="review-mentor-name" class="font-semibold text-slate-800">-</span></p>
-
-            <div id="reviews-list-container" class="space-y-3 overflow-y-auto pr-2 flex-1">
-                <!-- Reviews items will be inserted here dynamically -->
+    <!-- Topup Modal -->
+    <div id="topup-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-panel rounded-3xl max-w-sm w-full p-6 shadow-2xl relative space-y-4 border-emerald-500/30 cyber-glow">
+            <button onclick="closeTopupModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            <h3 class="text-lg font-bold text-white">เติม Time-Credit (Payment Gateway)</h3>
+            <p class="text-xs text-slate-400 font-mono">ชำระเงินผ่าน PromptPay QR หรือ บัตรเครดิตเพื่อรับเครดิตทันที</p>
+            <div class="space-y-3 pt-2">
+                <button onclick="processTopupPayment(3, 900)" class="w-full p-4 border border-slate-700 rounded-2xl text-left hover:border-emerald-400 hover:bg-emerald-950/20 transition group">
+                    <div class="font-bold text-sm text-white group-hover:text-emerald-400">📦 แพ็กเกจ 3 Credits</div>
+                    <div class="text-xs text-slate-400 font-mono mt-0.5">ราคา 900 บาท (ชำระผ่าน PromptPay / Card)</div>
+                </button>
+                <button onclick="processTopupPayment(5, 1400)" class="w-full p-4 border border-slate-700 rounded-2xl text-left hover:border-emerald-400 hover:bg-emerald-950/20 transition group">
+                    <div class="font-bold text-sm text-white group-hover:text-emerald-400">🚀 แพ็กเกจ 5 Credits (สุดคุ้ม)</div>
+                    <div class="text-xs text-slate-400 font-mono mt-0.5">ราคา 1,400 บาท (ชำระผ่าน PromptPay / Card)</div>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Application Script Logic -->
+    <!-- Modal: Virtual Meeting Room (With Feature 8: AI Summary & Transcripts) -->
+    <div id="meeting-room-modal" class="fixed inset-0 bg-black/90 backdrop-blur-lg z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-panel rounded-3xl max-w-5xl w-full p-6 shadow-2xl relative border-cyan-500/50 cyber-glow h-[90vh] flex flex-col">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-3 h-3 rounded-full bg-emerald-400 animate-ping"></div>
+                    <div>
+                        <h3 id="meeting-room-title" class="text-lg font-bold text-white">Cyber Consulting Room #SB-2026</h3>
+                        <p class="text-xs text-cyan-400 font-mono">WebRTC Secure Video Stream + AI Speech-to-Text Active</p>
+                    </div>
+                </div>
+                <button onclick="closeMeetingRoomModal()" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-4 py-2 rounded-xl text-xs transition">ออกจากห้องประชุม</button>
+            </div>
+
+            <div class="flex-1 my-4 bg-slate-950 rounded-2xl border border-slate-800 relative overflow-hidden flex flex-col md:flex-row">
+                <div class="flex-1 relative flex flex-col items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-cyan-900/20 via-slate-950 to-slate-950 pointer-events-none"></div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full h-full items-center justify-center z-10">
+                        <div class="bg-slate-900 rounded-2xl border border-cyan-500/30 overflow-hidden relative aspect-video flex items-center justify-center shadow-2xl">
+                            <div class="absolute bottom-3 left-3 bg-slate-950/80 px-3 py-1 rounded-lg text-xs font-mono text-cyan-400 border border-slate-800">👨‍🏫 เมนทอร์ (Connected)</div>
+                            <div class="w-16 h-16 rounded-full bg-cyan-500/20 border-2 border-cyan-400 flex items-center justify-center text-cyan-300 font-bold text-xl relative z-10 shadow-lg">M</div>
+                        </div>
+                        <div class="bg-slate-900 rounded-2xl border border-purple-500/30 overflow-hidden relative aspect-video flex items-center justify-center shadow-2xl">
+                            <div class="absolute bottom-3 left-3 bg-slate-950/80 px-3 py-1 rounded-lg text-xs font-mono text-purple-400 border border-slate-800">👤 ผู้เรียน (You - Live)</div>
+                            <div class="w-16 h-16 rounded-full bg-purple-500/20 border-2 border-purple-400 flex items-center justify-center text-purple-300 font-bold text-xl relative z-10 shadow-lg">U</div>
+                        </div>
+                    </div>
+                    <div class="absolute bottom-4 flex gap-3 z-20">
+                        <button onclick="alert('ปิด/เปิด ไมโครโฟนเรียบร้อย')" class="p-3 bg-slate-900 hover:bg-slate-800 rounded-full border border-slate-700 text-white text-xs">🎙️ Mute</button>
+                        <button onclick="alert('ปิด/เปิด กล้องวิดีโอเรียบร้อย')" class="p-3 bg-slate-900 hover:bg-slate-800 rounded-full border border-slate-700 text-white text-xs">📷 Video</button>
+                        <button onclick="alert('เปิดหน้าต่างแชร์หน้าจอสำเร็จ')" class="p-3 bg-cyan-600 hover:bg-cyan-500 rounded-full text-black font-bold text-xs px-4">💻 Share Screen</button>
+                    </div>
+                </div>
+
+                <!-- FEATURE 8: AI TRANSCRIPT & SUMMARY PANEL -->
+                <div class="w-full md:w-80 bg-slate-900/90 border-l border-slate-800 p-4 flex flex-col font-mono text-xs space-y-3">
+                    <div class="font-bold text-cyan-400 flex items-center justify-between">
+                        <span>🎙️ AI Speech-to-Text & Summary</span>
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    </div>
+                    <div id="ai-transcript-box" class="flex-1 bg-slate-950 p-3 rounded-xl border border-slate-800 overflow-y-auto space-y-2 text-[11px] text-slate-300">
+                        <div><span class="text-cyan-400">[00:02]:</span> สวัสดีครับ ยินดีต้อนรับสู่เซสชันปรึกษาโปรเจกต์ WMS...</div>
+                        <div><span class="text-purple-400">[00:15]:</span> ต้องการปรับปรุง Apps Script ตัดสต็อกอัตโนมัติครับ</div>
+                    </div>
+                    <button onclick="generateAISessionSummary()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl transition">
+                        ✨ สรุปประเด็นสำคัญด้วย AI
+                    </button>
+                </div>
+            </div>
+
+            <div class="text-center text-xs text-slate-500 font-mono">
+                ระบบเข้ารหัสแบบ End-to-End Secure WebRTC เชื่อมต่ออัตโนมัติเมื่อยืนยันการจองเซสชันสำเร็จ
+            </div>
+        </div>
+    </div>
+
+    <!-- FEATURE 6: PRE-ASSESSMENT MODAL -->
+    <div id="pre-assessment-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 shadow-2xl relative border-purple-500/30 cyber-glow space-y-4 font-mono text-xs">
+            <button onclick="closePreAssessmentModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            <h3 class="text-lg font-bold text-white">🧪 แบบทดสอบทักษะก่อนจับคู่ (Pre-Assessment AI Quiz)</h3>
+            <p class="text-slate-400">ตอบคำถามสั้นๆ เพื่อให้ AI วิเคราะห์ระดับความรู้ของคุณและแนะนำเมนทอร์ที่ตรงจุดที่สุด</p>
+            <div class="space-y-3 p-4 bg-slate-900 rounded-2xl border border-slate-800">
+                <div class="font-bold text-cyan-400">คำถามที่ 1: คุณเชี่ยวชาญการใช้งาน Google Apps Script ในระดับใด?</div>
+                <label class="block cursor-pointer text-slate-300 hover:text-white"><input type="radio" name="quiz1" class="mr-2 accent-cyan-400"> พื้นฐาน (Basic Functions & Triggers)</label>
+                <label class="block cursor-pointer text-slate-300 hover:text-white"><input type="radio" name="quiz1" class="mr-2 accent-cyan-400"> ปานกลาง (API Integrations & PDF Generation)</label>
+                <label class="block cursor-pointer text-slate-300 hover:text-white"><input type="radio" name="quiz1" class="mr-2 accent-cyan-400"> ขั้นสูง (Enterprise WMS Automation & Custom UI)</label>
+            </div>
+            <button onclick="submitPreAssessment()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition">ประเมินผลผ่าน AI และแนะนำเมนทอร์ ⚡</button>
+        </div>
+    </div>
+
+    <!-- FEATURE 3: E-TAX INVOICE MODAL -->
+    <div id="etax-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 shadow-2xl relative border-cyan-500/30 cyber-glow space-y-4 font-mono text-xs">
+            <button onclick="closeETaxModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            <h3 class="text-lg font-bold text-white">📄 ระบบออกใบเสร็จและใบกำกับภาษีอิเล็กทรอนิกส์ (e-Tax)</h3>
+            <p class="text-slate-400">กรอกข้อมูลองค์กรหรือบุคคลทั่วไปเพื่อดาวน์โหลดเอกสารทางการเงิน</p>
+            <div class="space-y-3">
+                <input type="text" id="etax-name" placeholder="ชื่อบริษัท / ชื่อ-นามสกุล" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white">
+                <input type="text" id="etax-taxid" placeholder="เลขประจำตัวผู้เสียภาษี (13 หลัก)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white">
+                <input type="text" id="etax-address" placeholder="ที่อยู่ในการออกใบกำกับภาษี" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white">
+            </div>
+            <button onclick="downloadETaxPDF()" class="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold py-3 rounded-xl transition">ดาวน์โหลดใบกำกับภาษี PDF 📥</button>
+        </div>
+    </div>
+
+    <!-- FEATURE 10: POST-SESSION FEEDBACK MODAL -->
+    <div id="feedback-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-panel rounded-3xl max-w-md w-full p-6 shadow-2xl relative border-amber-500/30 cyber-glow space-y-4 font-mono text-xs">
+            <button onclick="closeFeedbackModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white text-xl font-bold">&times;</button>
+            <h3 class="text-lg font-bold text-white">⭐ ประเมินความพึงพอใจหลังเรียน (Post-Session Feedback)</h3>
+            <p class="text-slate-400">ให้คะแนน เขียนรีวิว เพื่ออัปเดตโปรไฟล์เมนทอร์แบบเรียลไทม์</p>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-slate-300 mb-1">ให้คะแนน (1-5 ดาว):</label>
+                    <select id="feedback-rating" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white">
+                        <option value="5">★★★★★ (5 ดาว - ยอดเยี่ยมมาก)</option>
+                        <option value="4">★★★★☆ (4 ดาว - ดีมาก)</option>
+                        <option value="3">★★★☆☆ (3 ดาว - ปานกลาง)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1">เขียนรีวิวผลลัพธ์การเรียน:</label>
+                    <textarea id="feedback-comment" rows="3" placeholder="อธิบายประโยชน์ที่ได้รับจากเซสชันนี้..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white"></textarea>
+                </div>
+            </div>
+            <button onclick="submitSessionFeedback()" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-3 rounded-xl transition">ส่งรีวิว & อัปเดตโปรไฟล์เมนทอร์ 🚀</button>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
     <script>
-        // Default Logged-In User Data
-        let currentUser = {
-            id: 'usr-8942',
-            memberCode: 'SB-2026-8942',
-            name: 'สุกัญญา มันโตกัณฑ์',
-            email: 'sukanya.m@pru.ac.th',
-            tier: 'Silver Member',
-            credits: 4
+        let currentUser = null;
+        let currentRole = 'Admin'; // Default role
+        let currentExpertiseFilter = 'ALL';
+        let chatMessageCount = 0;
+        let activeFeedbackBookingId = null;
+
+        let auditLogs = [
+            { id: 'log-1', time: '2026-09-02 10:00:15', action: 'SYSTEM_BOOT', details: 'Enterprise Omni-Consulting Hub v5.0 initialized with Admin RBAC & Gateway.' },
+            { id: 'log-2', time: '2026-09-02 10:02:40', action: 'USER_LOGIN', details: 'User admin@test.com authenticated as Admin.' },
+            { id: 'log-3', time: '2026-09-02 10:05:12', action: 'PAYMENT_SUCCESS', details: 'PromptPay QR payment verified ฿350 for session with ดนัย สุขเกษม.' }
+        ];
+
+        let userBookings = [
+            { id: 'b-101', mentorId: 'm-5', mentorName: 'ดนัย สุขเกษม', skill: 'Apps Script & WMS', timeSlot: '2026-09-02 (18:00 - 18:30 น.)', type: 'PROMPTPAY', status: 'Completed', alertTriggered: true, summary: null, reviewed: false }
+        ];
+
+        let notifications = [
+            { id: 'n-1', title: 'การชำระเงินสำเร็จ (Payment Confirmed)', desc: 'ระบบตรวจสอบยอดเงิน ฿350 ผ่าน PromptPay QR เรียบร้อย', time: '10 นาทีที่แล้ว', read: false },
+            { id: 'n-2', title: 'ห้องประชุม Virtual Room พร้อมใช้งาน', desc: 'คลิกปุ่ม Join Cyber Meeting Room เพื่อเข้าห้องปรึกษา', time: '1 ชั่วโมงที่แล้ว', read: false }
+        ];
+
+        const firstNames = ['นภัทร', 'ศิริพร', 'อนันต์', 'กัญจนา', 'ดนัย', 'พิมลพรรณ', 'กิตติศักดิ์', 'ภัทรดนัย', 'ธนกฤต', 'ชุติมา', 'วรพล', 'สุภาพร', 'อภิสิทธิ์', 'เขมิกา', 'ปิยะ', 'ณัฐพงศ์', 'ธัญญารัตน์', 'สาริศา', 'จักริน', 'เมธาวี'];
+        const lastNames = ['วงศ์ดี', 'สุขเกษม', 'เลิศวิทย์', 'โคเดอร์', 'จิตวิทยา', 'ไพศาล', 'รัตนโกสินทร์', 'บำรุงสุข', 'พงษ์พานิช', 'อัศวเกียรติ', 'ทรัพย์อนันต์', 'เจริญพงศ์', 'เดชะวงศ์', 'พูนผล', 'มั่นคง'];
+        const categories = ['Logistics & Supply Chain', 'Tech & AI', 'Business & Finance', 'Mental Health', 'Law & Rights'];
+        const genders = ['Male', 'Female', 'LGBTQ+'];
+        const expertiseLevels = ['Senior', 'Expert', 'Elite'];
+        
+        const titles = {
+            'Logistics & Supply Chain': ['ผู้เชี่ยวชาญระบบ WMS & Automated Material Requisition', 'ที่ปรึกษาคลังสินค้าและระบบห่วงโซ่อุปทานอัจฉริยะ', 'นักวิศวกรรมโลจิสติกส์และระบบเบิกจ่ายวัสดุ'],
+            'Tech & AI': ['ที่ปรึกษาซอฟต์แวร์ Google Apps Script & AppSheet', 'ผู้เชี่ยวชาญ Full-Stack & Cloud Architecture', 'AI Prompt Engineering & Enterprise Automation'],
+            'Business & Finance': ['ที่ปรึกษาการเงินส่วนบุคคล & ภาษี', 'ผู้เชี่ยวชาญการวางแผนธุรกิจ Startup', 'นักวิเคราะห์การลงทุนและบัญชีองค์กร'],
+            'Mental Health': ['ผู้เชี่ยวชาญด้านจิตวิทยาและการเยียวยาใจ', 'ที่ปรึกษาปัญหาวัยรุ่นและแรงบันดาลใจ', 'ผู้เชี่ยวชาญด้านการจัดการความเครียด & Burnout'],
+            'Law & Rights': ['ที่ปรึกษากฎหมายและสิทธิ์แรงงาน', 'ทนายความผู้เชี่ยวชาญคดีธุรกิจและสัญญา', 'ที่ปรึกษากฎหมายไอทีและทรัพย์สินทางปัญญา']
         };
 
-        // 30 Mentors Mock Data with > 50 Total Reviews
-        const mentorsData = [
-            {
-                id: 'm-1',
-                name: 'ณภัทร วงศ์ดี',
-                title: 'Senior Full-Stack Developer',
-                rating: 4.9,
-                totalReviews: 8,
-                hourlyRate: 350,
-                skills: ['React', 'Next.js', 'Node.js', 'PostgreSQL'],
+        const skillPool = {
+            'Logistics & Supply Chain': ['Apps Script', 'WMS', 'Material Requisition', 'AppSheet', 'SKU Management', 'Lean Logistics'],
+            'Tech & AI': ['Python', 'React', 'Google Sheets', 'Database Design', 'API Integration', 'Automation'],
+            'Business & Finance': ['วางแผนการเงิน', 'ภาษี', 'ลงทุน', 'บัญชีสต็อก', 'งบการเงิน'],
+            'Mental Health': ['ความเครียด', 'ซึมเศร้า', 'พัฒนาตนเอง', 'Burnout', 'เป้าหมายชีวิต'],
+            'Law & Rights': ['สัญญาจ้าง', 'คดีแรงงาน', 'กฎหมายทั่วไป', 'ลิขสิทธิ์ & ไอที']
+        };
+
+        const mentorsData = [];
+        for (let i = 1; i <= 100; i++) {
+            const cat = categories[(i - 1) % categories.length];
+            const gender = genders[(i - 1) % genders.length];
+            const expLevel = expertiseLevels[(i - 1) % expertiseLevels.length];
+            const fName = firstNames[(i * 7) % firstNames.length];
+            const lName = lastNames[(i * 13) % lastNames.length];
+            const titleList = titles[cat];
+            const title = titleList[(i * 3) % titleList.length];
+            const skills = [skillPool[cat][i % skillPool[cat].length], skillPool[cat][(i + 1) % skillPool[cat].length]];
+            const avatarUrl = `https://picsum.photos/seed/${100 + i}/300/300`;
+            const isOnline = (i % 5 !== 0 && i % 3 !== 0) || i % 7 === 0;
+            const rate = 300 + ((i % 12) * 50);
+
+            mentorsData.push({
+                id: `m-${i}`,
+                name: `${fName} ${lName} (${i})`,
+                title: title,
+                category: cat,
+                gender: gender,
+                expertiseLevel: expLevel,
+                avatar: avatarUrl,
+                rating: (4.7 + ((i % 3) * 0.1)).toFixed(1),
+                totalReviews: 15 + (i % 6),
+                hourlyRate: rate,
+                skills: skills,
                 reviews: [
-                    { reviewer: 'กิตติศักดิ์', rating: 5, comment: 'อธิบายเรื่อง App Router ได้เห็นภาพชัดเจนมากครับ แก้ปัญหางานได้ทันที' },
-                    { reviewer: 'เมธาพร', rating: 5, comment: 'สอนเทคนิค Prisma ORM แบบเข้าใจง่าย เป็นกันเองมากๆ ค่ะ' }
-                ]
-            },
-            {
-                id: 'm-2',
-                name: 'ดนัย สุขเกษม',
-                title: 'Logistics & Warehouse Specialist',
-                rating: 4.8,
-                totalReviews: 6,
-                hourlyRate: 300,
-                skills: ['WMS', 'Inventory Control', 'Google Apps Script', 'AppSheet'],
-                reviews: [
-                    { reviewer: 'ภัทรดนัย', rating: 5, comment: 'ช่วยเขียน Apps Script เชื่อม Google Sheets กับคลังสินค้าได้ราบรื่นมาก' },
-                    { reviewer: 'ชลธิชา', rating: 4.5, comment: 'ให้คำแนะนำเรื่องการวางระบบ SKU ได้เป็นระเบียบสุดๆ ค่ะ' }
-                ]
-            },
-            {
-                id: 'm-3',
-                name: 'พิมลพรรณ เลิศวิทย์',
-                title: 'UX/UI Designer & Product Strategist',
-                rating: 5.0,
-                totalReviews: 12,
-                hourlyRate: 400,
-                skills: ['Figma', 'User Research', 'Wireframing', 'Design Systems'],
-                reviews: [
-                    { reviewer: 'อนันต์', rating: 5, comment: 'ตรวจ UI Feedback ให้ละเอียดมาก นำไปปรับใช้แล้ว Conversion ดีขึ้น' },
-                    { reviewer: 'วรินทร', rating: 5, comment: 'สอนสร้าง Design System ใน Figma เข้าใจง่ายและเป็นมืออาชีพมาก' }
-                ]
-            },
-            {
-                id: 'm-4',
-                name: 'กิตติพงษ์ เจริญทรัพย์',
-                title: 'Data Analyst & Python Expert',
-                rating: 4.7,
-                totalReviews: 5,
-                hourlyRate: 320,
-                skills: ['Python', 'Pandas', 'PowerBI', 'SQL'],
-                reviews: [
-                    { reviewer: 'ศิริพร', rating: 5, comment: 'สอนการทำ Data Cleaning ด้วย Pandas ละเอียดดีมากค่ะ' }
-                ]
-            },
-            {
-                id: 'm-5',
-                name: 'อรอนงค์ ธีระกุล',
-                title: 'Digital Marketing Lead',
-                rating: 4.9,
-                totalReviews: 7,
-                hourlyRate: 380,
-                skills: ['SEO', 'Facebook Ads', 'Google Analytics', 'Content Strategy'],
-                reviews: [
-                    { reviewer: 'ธนกฤต', rating: 5, comment: 'วางกลยุทธ์ยิงแอดได้ตรงกลุ่มเป้าหมาย ค่าโฆษณาลดลงชัดเจน' }
-                ]
-            },
-            {
-                id: 'm-6',
-                name: 'ธีรเดช พัฒนศิลป์',
-                title: 'DevOps & Cloud Engineer',
-                rating: 4.9,
-                totalReviews: 4,
-                hourlyRate: 450,
-                skills: ['Docker', 'Kubernetes', 'AWS', 'CI/CD'],
-                reviews: [
-                    { reviewer: 'ชัยวัฒน์', rating: 5, comment: 'ช่วย Setup CI/CD Pipeline ผ่าน GitHub Actions ได้รวดเร็วมากครับ' }
-                ]
-            },
-            {
-                id: 'm-7',
-                name: 'ชลธิชา ศรีสว่าง',
-                title: 'Supply Chain Analyst',
-                rating: 4.6,
-                totalReviews: 3,
-                hourlyRate: 290,
-                skills: ['Supply Chain', 'ERP', 'Demand Forecasting', 'Excel'],
-                reviews: [
-                    { reviewer: 'มนัส', rating: 4.5, comment: 'คำนวณ Safety Stock ได้แม่นยำขึ้นเยอะเลยครับ' }
-                ]
-            },
-            {
-                id: 'm-8',
-                name: 'ปวัฒน์ มีสุข',
-                title: 'Mobile App Developer (Flutter)',
-                rating: 4.8,
-                totalReviews: 5,
-                hourlyRate: 350,
-                skills: ['Flutter', 'Dart', 'Firebase', 'State Management'],
-                reviews: [
-                    { reviewer: 'กษิดิศ', rating: 5, comment: 'แก้ Bug เรื่อง State Management ให้จบใน 20 นาที สุดยอดครับ' }
-                ]
-            },
-            {
-                id: 'm-9',
-                name: 'วรัญญา บุญมา',
-                title: 'HR & Career Coach',
-                rating: 5.0,
-                totalReviews: 9,
-                hourlyRate: 250,
-                skills: ['Resume Review', 'Interview Prep', 'Career Path', 'LinkedIn'],
-                reviews: [
-                    { reviewer: 'สุรพงษ์', rating: 5, comment: 'ช่วยตรวจ Resume ให้รวดเร็ว มีคำแนะนำเชิงลึกที่ใช้ได้จริง' }
-                ]
-            },
-            {
-                id: 'm-10',
-                name: 'สมศักดิ์ ปัญญาดี',
-                title: 'Database Administrator',
-                rating: 4.7,
-                totalReviews: 3,
-                hourlyRate: 380,
-                skills: ['PostgreSQL', 'MySQL', 'Database Tuning', 'Query Optimization'],
-                reviews: [
-                    { reviewer: 'ภาณุ', rating: 5, comment: 'ช่วย Optimization Query ที่ช้าให้เร็วขึ้นทันตาเห็นครับ' }
-                ]
-            },
-            {
-                id: 'm-11',
-                name: 'นภาวรรณ รุ่งเรือง',
-                title: 'Graphic & Brand Designer',
-                rating: 4.8,
-                totalReviews: 6,
-                hourlyRate: 300,
-                skills: ['Illustrator', 'Photoshop', 'Branding', 'Logo Design'],
-                reviews: [
-                    { reviewer: 'อลิสา', rating: 5, comment: 'คำแนะนำเรื่องทฤษฎีสีและการวางโลโก้มีประโยชน์มากค่ะ' }
-                ]
-            },
-            {
-                id: 'm-12',
-                name: 'จักรกฤษณ์ สุวรรณ',
-                title: 'Cyber Security Consultant',
-                rating: 4.9,
-                totalReviews: 4,
-                hourlyRate: 500,
-                skills: ['Penetration Testing', 'OWASP', 'Web Security', 'Network'],
-                reviews: [
-                    { reviewer: 'วีระ', rating: 5, comment: 'ช่วยตรวจช่องโหว่ SQL Injection และ XSS ได้ละเอียดมาก' }
-                ]
-            },
-            {
-                id: 'm-13',
-                name: 'มยุรี ใจดี',
-                title: 'Agile & Scrum Master',
-                rating: 4.7,
-                totalReviews: 3,
-                hourlyRate: 330,
-                skills: ['Scrum Framework', 'Jira', 'Agile Coaching', 'Sprint Planning'],
-                reviews: [
-                    { reviewer: 'พิชญะ', rating: 4.5, comment: 'แนะนำการรัน Sprint Planning ให้ทีมทำงานราบรื่นขึ้นมาก' }
-                ]
-            },
-            {
-                id: 'm-14',
-                name: 'ธนกร วิเศษ',
-                title: 'Backend Developer (Go)',
-                rating: 4.9,
-                totalReviews: 5,
-                hourlyRate: 400,
-                skills: ['Golang', 'Microservices', 'REST API', 'gRPC'],
-                reviews: [
-                    { reviewer: 'อนิรุตติ์', rating: 5, comment: 'โค้ด Clean และอธิบายการใช้ Goroutines ได้กระจ่างมากครับ' }
-                ]
-            },
-            {
-                id: 'm-15',
-                name: 'ศิริพร บุญมี',
-                title: 'E-commerce Specialist',
-                rating: 4.6,
-                totalReviews: 4,
-                hourlyRate: 280,
-                skills: ['Shopee/Lazada', 'TikTok Shop', 'Live Selling', 'Inventory'],
-                reviews: [
-                    { reviewer: 'กนกวรรณ', rating: 5, comment: 'สอนตั้งค่าหลังบ้าน TikTok Shop ชัดเจนมากค่ะ' }
-                ]
-            },
-            {
-                id: 'm-16',
-                name: 'ปรีชา วงศ์สว่าง',
-                title: 'Embedded Systems Engineer',
-                rating: 4.8,
-                totalReviews: 3,
-                hourlyRate: 360,
-                skills: ['Arduino', 'ESP32', 'IoT', 'C/C++'],
-                reviews: [
-                    { reviewer: 'นิวัฒน์', rating: 5, comment: 'ต่อวงจรเซนเซอร์และเขียนโค้ดอ่านค่าได้ตรงตามต้องการ' }
-                ]
-            },
-            {
-                id: 'm-17',
-                name: 'สิรินธร แก้วมณี',
-                title: 'Financial Analyst',
-                rating: 4.9,
-                totalReviews: 6,
-                hourlyRate: 420,
-                skills: ['Financial Model', 'Valuation', 'Excel Dashboard', 'Cash Flow'],
-                reviews: [
-                    { reviewer: 'ธนา', rating: 5, comment: 'ช่วยวางแบบจำลองทางการเงินสำหรับยื่นกู้ได้มืออาชีพมาก' }
-                ]
-            },
-            {
-                id: 'm-18',
-                name: 'พิชิต ชัยชนะ',
-                title: 'Video Editor & Motion Graphic',
-                rating: 4.7,
-                totalReviews: 4,
-                hourlyRate: 310,
-                skills: ['Premiere Pro', 'After Effects', 'CapCut', 'Color Grading'],
-                reviews: [
-                    { reviewer: 'ชไมพร', rating: 4.5, comment: 'สอนตัดต่อคลิปสั้นลง Reels และ TikTok ได้กระชับดีค่ะ' }
-                ]
-            },
-            {
-                id: 'm-19',
-                name: 'นุชรา ยอดงาม',
-                title: 'Content Creator & Copywriter',
-                rating: 4.8,
-                totalReviews: 5,
-                hourlyRate: 270,
-                skills: ['Copywriting', 'Storytelling', 'Social Media', 'Blogging'],
-                reviews: [
-                    { reviewer: 'เกศรา', rating: 5, comment: 'เขียนแคปชันขายของได้โดนใจ เพิ่มยอดคลิกได้จริง' }
-                ]
-            },
-            {
-                id: 'm-20',
-                name: 'ทรงพล รัตนกุล',
-                title: 'No-Code/Low-Code Developer',
-                rating: 4.9,
-                totalReviews: 7,
-                hourlyRate: 320,
-                skills: ['Bubble.io', 'Webflow', 'Zapier', 'Make.com'],
-                reviews: [
-                    { reviewer: 'ศุภชัย', rating: 5, comment: 'สร้าง Web App ด้วย Bubble เสร็จไวภายใน 30 นาที สุดยอด' }
-                ]
-            },
-            {
-                id: 'm-21',
-                name: 'รภัทร ชาญชัย',
-                title: 'AI Prompt Engineer',
-                rating: 5.0,
-                totalReviews: 8,
-                hourlyRate: 350,
-                skills: ['ChatGPT', 'Midjourney', 'Prompt Tuning', 'Claude API'],
-                reviews: [
-                    { reviewer: 'วีรยุทธ', rating: 5, comment: 'เขียน Prompt ให้ AI ช่วยทำงานอัตโนมัติ ช่วยประหยัดเวลามาก' }
-                ]
-            },
-            {
-                id: 'm-22',
-                name: 'ณิชาภัทร เลิศไกล',
-                title: 'Business Development Manager',
-                rating: 4.6,
-                totalReviews: 3,
-                hourlyRate: 390,
-                skills: ['Pitching', 'B2B Sales', 'Partnership', 'Negotiation'],
-                reviews: [
-                    { reviewer: 'นพดล', rating: 4.5, comment: 'ให้คำแนะนำการเตรียมตัว Pitching กับ Investor ได้ตรงจุด' }
-                ]
-            },
-            {
-                id: 'm-23',
-                name: 'สุทัศน์ พรหมดี',
-                title: 'Network Administrator',
-                rating: 4.7,
-                totalReviews: 4,
-                hourlyRate: 340,
-                skills: ['Cisco', 'MikroTik', 'VPN', 'Firewall Config'],
-                reviews: [
-                    { reviewer: 'สมชาย', rating: 5, comment: 'ตั้งค่า Site-to-Site VPN ผ่าน MikroTik ได้สำเร็จตามแผน' }
-                ]
-            },
-            {
-                id: 'm-24',
-                name: 'พรทิพย์ สุขเจริญ',
-                title: 'English for Business Coach',
-                rating: 4.9,
-                totalReviews: 9,
-                hourlyRate: 300,
-                skills: ['Business Email', 'Presentation Skill', 'Interview English', 'Grammar'],
-                reviews: [
-                    { reviewer: 'จิราพร', rating: 5, comment: 'ช่วยซ้อมสัมภาษณ์งานภาษาอังกฤษ ทำให้มีความมั่นใจขึ้นมากค่ะ' }
-                ]
-            },
-            {
-                id: 'm-25',
-                name: 'ภานุวัฒน์ แสงทอง',
-                title: 'Game Developer (Unity)',
-                rating: 4.8,
-                totalReviews: 5,
-                hourlyRate: 370,
-                skills: ['Unity 3D', 'C#', 'Game Physics', 'Shader Graph'],
-                reviews: [
-                    { reviewer: 'ธนพล', rating: 5, comment: 'แก้ปัญหา ฟิสิกส์ของการชนใน Unity ได้กระจ่างมากครับ' }
-                ]
-            },
-            {
-                id: 'm-26',
-                name: 'อารียา กุลสตรี',
-                title: 'Accounting & Tax Advisor',
-                rating: 4.8,
-                totalReviews: 6,
-                hourlyRate: 350,
-                skills: ['Tax Planning', 'Withholding Tax', 'VAT', 'Express Software'],
-                reviews: [
-                    { reviewer: 'สุมาลี', rating: 5, comment: 'ให้คำแนะนำภาษีบุคคลธรรมดาและนิติบุคคลชัดเจน ปลอดภัย' }
-                ]
-            },
-            {
-                id: 'm-27',
-                name: 'นพพร อินทร์งาม',
-                title: 'QA & Software Tester',
-                rating: 4.7,
-                totalReviews: 4,
-                hourlyRate: 310,
-                skills: ['Cypress', 'Postman API Testing', 'Manual Testing', 'Test Case'],
-                reviews: [
-                    { reviewer: 'ชานนท์', rating: 4.5, comment: 'สอนเขียน Automated Test ด้วย Cypress เข้าใจง่ายดีครับ' }
-                ]
-            },
-            {
-                id: 'm-28',
-                name: 'วรรณิศา ผ่องใส',
-                title: 'Event & Workshop Organizer',
-                rating: 4.6,
-                totalReviews: 3,
-                hourlyRate: 260,
-                skills: ['Event Planning', 'Sponsorship', 'Vendor Coordination', 'Budgeting'],
-                reviews: [
-                    { reviewer: 'ปิยะนันท์', rating: 5, comment: 'ช่วยวาง Timeline การจัดงานสัมมนาได้อย่างรัดกุมมาก' }
-                ]
-            },
-            {
-                id: 'm-29',
-                name: 'ก้องภพ ปรีดา',
-                title: 'SEO & Web Master',
-                rating: 4.9,
-                totalReviews: 7,
-                hourlyRate: 360,
-                skills: ['Technical SEO', 'WordPress', 'Google Search Console', 'Speed Audit'],
-                reviews: [
-                    { reviewer: 'ศิริชัย', rating: 5, comment: 'ปรับปรุง Speed Core Web Vitals เว็บไซต์ขึ้นสีเขียวเลยครับ' }
-                ]
-            },
-            {
-                id: 'm-30',
-                name: 'เมธาวี สุขสมบูรณ์',
-                title: 'Product Owner & Business Analyst',
-                rating: 5.0,
-                totalReviews: 6,
-                hourlyRate: 410,
-                skills: ['User Stories', 'PRD Writing', 'Backlog Refinement', 'BPMN'],
-                reviews: [
-                    { reviewer: 'พงศธร', rating: 5, comment: 'ช่วยเขียน User Story ได้ละเอียด ทีม Dev เอาไปทำงานต่อได้ง่าย' }
-                ]
-            }
-        ];
+                    { reviewer: 'ผู้ใช้งาน #8013', rating: 5, comment: 'ให้คำแนะนำเรื่องระบบเบิกจ่ายและ Apps Script ได้ตรงจุดมาก นำไปปรับใช้ได้จริงทันที' },
+                    { reviewer: 'ผู้ใช้งาน #8025', rating: 5, comment: 'เมนทอร์มีความเชี่ยวชาญสูงและเป็นมืออาชีพ ช่วยปลดล็อกปัญหาคลังสินค้าได้เยอะ' }
+                ],
+                online: isOnline
+            });
+        }
 
         let selectedMentor = null;
 
-        // View Routing Management
-        function showView(viewName) {
-            const authView = document.getElementById('auth-view');
-            const dashboardView = document.getElementById('dashboard-view');
-
-            if (viewName === 'auth') {
-                authView.classList.remove('hidden');
-                dashboardView.classList.add('hidden');
-            } else {
-                authView.classList.add('hidden');
-                dashboardView.classList.remove('hidden');
-                renderMentors();
+        function calculateCompatibilityScore(mentor, searchQuery) {
+            let score = 70;
+            if (!searchQuery) {
+                score += (parseFloat(mentor.rating) * 4) + (mentor.totalReviews * 0.2);
+                return Math.min(Math.round(score * 10) / 10, 99.5);
             }
+            const query = searchQuery.toLowerCase();
+            const matchSkill = mentor.skills.some(s => s.toLowerCase().includes(query));
+            const matchTitle = mentor.title.toLowerCase().includes(query);
+            const matchCategory = mentor.category.toLowerCase().includes(query);
+
+            if (matchSkill) score += 20;
+            if (matchTitle) score += 15;
+            if (matchCategory) score += 10;
+            score += parseFloat(mentor.rating) * 2;
+
+            return Math.min(Math.round(score * 10) / 10, 99.8);
         }
 
-        // Render Navbar with Member ID & Full Info
+        function showView(viewName) {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('ai-hub-view').classList.add('hidden');
+            document.getElementById('rbac-admin-view').classList.add('hidden');
+            document.getElementById('learning-dashboard-view').classList.add('hidden');
+            document.getElementById('bookings-view').classList.add('hidden');
+            document.getElementById('resource-sharing-view').classList.add('hidden');
+            document.getElementById('advanced-analytics-view').classList.add('hidden');
+            document.getElementById('mentor-dashboard-view').classList.add('hidden');
+
+            if (viewName === 'auth') {
+                document.getElementById('auth-view').classList.remove('hidden');
+            } else if (viewName === 'ai-hub') {
+                document.getElementById('ai-hub-view').classList.remove('hidden');
+            } else if (viewName === 'rbac-admin') {
+                if (currentUser && currentRole === 'Admin') {
+                    renderRBACAdminDashboard();
+                    document.getElementById('rbac-admin-view').classList.remove('hidden');
+                } else {
+                    alert('หน้านี้สำหรับผู้ดูแลระบบ (Admin) เท่านั้น');
+                    showView('dashboard');
+                    return;
+                }
+            } else if (viewName === 'learning-dashboard') {
+                document.getElementById('learning-dashboard-view').classList.remove('hidden');
+            } else if (viewName === 'bookings') {
+                renderBookings();
+                document.getElementById('bookings-view').classList.remove('hidden');
+            } else if (viewName === 'resource-sharing') {
+                document.getElementById('resource-sharing-view').classList.remove('hidden');
+            } else if (viewName === 'advanced-analytics') {
+                document.getElementById('advanced-analytics-view').classList.remove('hidden');
+            } else if (viewName === 'mentor-dashboard') {
+                if (currentRole === 'Mentor' && currentUser) {
+                    showMentorDashboard();
+                    document.getElementById('mentor-dashboard-view').classList.remove('hidden');
+                } else {
+                    showView('dashboard');
+                    return;
+                }
+            } else {
+                document.getElementById('dashboard-view').classList.remove('hidden');
+                renderMentors();
+            }
+            window.scrollTo(0, 0);
+        }
+
         function updateNavbar() {
             const navUserArea = document.getElementById('nav-user-area');
+            const navRBACBtn = document.getElementById('nav-rbac-btn');
+            document.getElementById('booking-badge-count').innerText = userBookings.length;
+            const unreadCount = notifications.filter(n => !n.read).length;
+
+            if (currentRole === 'Admin') {
+                navRBACBtn.classList.remove('hidden');
+            } else {
+                navRBACBtn.classList.add('hidden');
+            }
+
+            // Mentor ที่ล็อกอินจริงสามารถเข้าหน้า Dashboard ของตัวเองได้โดยตรง
+            const existingMentorBtn = document.getElementById('nav-mentor-portal-btn');
+            if (existingMentorBtn) existingMentorBtn.remove();
 
             if (currentUser) {
                 navUserArea.innerHTML = `
-                    <div class="hidden sm:flex flex-col items-end text-xs">
-                        <span class="font-bold text-slate-800">${currentUser.name}</span>
-                        <span class="text-indigo-600 font-mono font-medium">ID: ${currentUser.memberCode}</span>
-                    </div>
-                    <div class="bg-indigo-50 border border-indigo-100 rounded-full px-3.5 py-1.5 flex items-center gap-2">
-                        <span class="text-xs text-indigo-700 font-medium hidden sm:inline">เครดิต:</span>
-                        <span id="user-credits" class="text-xs sm:text-sm font-bold text-indigo-600">${currentUser.credits} Credits</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm" title="${currentUser.tier}">
-                            ${currentUser.name.substring(0, 2)}
-                        </div>
-                        <button onclick="handleLogout()" class="text-xs text-rose-500 hover:text-rose-700 font-medium border border-rose-200 bg-rose-50 px-2.5 py-1.5 rounded-lg transition">
-                            ออก
+                    ${currentRole === 'Mentor' ? `<button id="nav-mentor-portal-btn" onclick="showView('mentor-dashboard')" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-3 py-2 rounded-xl transition">👨‍🏫 Mentor Dashboard</button>` : ''}
+                    <div class="relative">
+                        <button onclick="toggleNotificationDropdown()" class="relative p-2.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-cyan-400 transition">
+                            🔔
+                            ${unreadCount > 0 ? `<span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-[9px] font-mono font-bold flex items-center justify-center text-white">${unreadCount}</span>` : ''}
                         </button>
+                        <div id="notification-dropdown" class="absolute right-0 mt-3 w-80 glass-panel rounded-2xl shadow-2xl p-4 hidden z-50 border border-cyan-500/30 space-y-3 font-mono">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                                <span class="font-bold text-xs text-cyan-400">🔔 SMART NOTIFICATIONS</span>
+                                <button onclick="markAllNotificationsRead()" class="text-[10px] text-slate-400 hover:text-white">อ่านทั้งหมด</button>
+                            </div>
+                            <div class="space-y-2 max-h-64 overflow-y-auto pr-1" id="notification-list-container">
+                                ${notifications.map(n => `
+                                    <div class="p-2.5 rounded-xl bg-slate-900/90 border ${n.read ? 'border-slate-800 opacity-70' : 'border-cyan-500/40'} text-xs space-y-1">
+                                        <div class="font-bold text-white flex justify-between">
+                                            <span>${n.title}</span>
+                                            <span class="text-[9px] text-slate-500">${n.time}</span>
+                                        </div>
+                                        <p class="text-slate-300 text-[11px]">${n.desc}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
                     </div>
+
+                    <div class="hidden sm:flex flex-col items-end text-xs font-mono">
+                        <span class="font-bold text-white">${currentUser.name}</span>
+                        <span class="text-amber-400">[Role: ${currentRole}]</span>
+                    </div>
+                    <div class="glass-panel border-cyan-500/30 rounded-2xl px-3 py-2 flex items-center gap-2 cursor-pointer hover:border-cyan-400 transition" onclick="openTopupModal()">
+                        <span class="text-xs text-slate-400 font-mono hidden sm:inline">CREDITS:</span>
+                        <span class="text-xs font-bold text-cyan-400 font-mono">${currentUser.credits} ⚡</span>
+                    </div>
+                    <button onclick="handleLogout()" class="text-xs font-mono text-rose-400 hover:text-rose-300 border border-rose-500/30 bg-rose-950/20 px-3 py-2 rounded-xl transition">LOGOUT</button>
                 `;
             } else {
                 navUserArea.innerHTML = `
-                    <button onclick="showView('auth')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2 rounded-xl transition shadow-sm">
-                        เข้าสู่ระบบ / ลงทะเบียน
-                    </button>
+                    <button onclick="showView('auth')" class="bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-extrabold px-5 py-2.5 rounded-xl transition shadow-lg tracking-wider">LOGIN</button>
                 `;
             }
         }
 
-        // Auth Tabs Switcher
+        function toggleNotificationDropdown() {
+            document.getElementById('notification-dropdown').classList.toggle('hidden');
+        }
+
+        function markAllNotificationsRead() {
+            notifications.forEach(n => n.read = true);
+            updateNavbar();
+            toggleNotificationDropdown();
+        }
+
         function switchAuthTab(tab) {
             const loginForm = document.getElementById('login-form');
             const regForm = document.getElementById('register-form');
             const loginBtn = document.getElementById('tab-login-btn');
             const regBtn = document.getElementById('tab-register-btn');
-
             if (tab === 'login') {
                 loginForm.classList.remove('hidden');
                 regForm.classList.add('hidden');
-                loginBtn.className = "flex-1 py-3 text-center font-bold text-indigo-600 border-b-2 border-indigo-600";
-                regBtn.className = "flex-1 py-3 text-center font-medium text-slate-500 hover:text-slate-700";
+                loginBtn.className = "flex-1 py-2.5 text-center font-bold text-sm text-cyan-400 bg-slate-800 rounded-lg shadow";
+                regBtn.className = "flex-1 py-2.5 text-center font-medium text-sm text-slate-400 hover:text-slate-200";
             } else {
                 loginForm.classList.add('hidden');
                 regForm.classList.remove('hidden');
-                regBtn.className = "flex-1 py-3 text-center font-bold text-indigo-600 border-b-2 border-indigo-600";
-                loginBtn.className = "flex-1 py-3 text-center font-medium text-slate-500 hover:text-slate-700";
+                regBtn.className = "flex-1 py-2.5 text-center font-bold text-sm text-purple-400 bg-slate-800 rounded-lg shadow";
+                loginBtn.className = "flex-1 py-2.5 text-center font-medium text-sm text-slate-400 hover:text-slate-200";
             }
         }
 
-        // Auth Actions
         function handleLogin(event) {
             event.preventDefault();
-            const email = document.getElementById('login-email').value;
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const emailInput = document.getElementById('login-email').value.trim();
+            const passwordInput = document.getElementById('login-password').value;
 
-            currentUser = {
-                id: 'usr-8942',
-                memberCode: 'SB-2026-8942',
-                name: 'สุกัญญา มันโตกัณฑ์',
-                email: email,
-                tier: 'Silver Member',
-                credits: 4
-            };
+            const isBackendAdmin = (usernameInput === 'mameemumaa' && emailInput === 'admin@test.com' && passwordInput === '12345678');
+            const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '[]');
+            const matchedAccount = registeredUsers.find(u =>
+                u.email && u.email.toLowerCase() === emailInput.toLowerCase() &&
+                u.password === passwordInput &&
+                (u.name || '').toLowerCase() === usernameInput.toLowerCase()
+            );
 
+            if (isBackendAdmin) {
+                currentRole = 'Admin';
+                currentUser = {
+                    id: 'usr-admin',
+                    memberCode: 'SB-CYBER-ADMIN',
+                    name: 'mameemumaa',
+                    email: emailInput,
+                    tier: 'Cyber Elite',
+                    credits: 10
+                };
+                addAuditLog('USER_LOGIN', `User ${emailInput} authenticated as Admin (Backend).`);
+            } else if (matchedAccount) {
+                currentRole = matchedAccount.role || 'User';
+                currentUser = { ...matchedAccount };
+                delete currentUser.password;
+                delete currentUser.role;
+                addAuditLog('USER_LOGIN', `User ${emailInput} authenticated as ${currentRole}.`);
+            } else {
+                currentRole = 'User';
+                currentUser = {
+                    id: 'usr-' + Date.now(),
+                    memberCode: 'SB-USER-' + Math.floor(Math.random() * 9000 + 1000),
+                    name: usernameInput || 'ผู้ใช้งานทั่วไป',
+                    email: emailInput,
+                    tier: 'Standard',
+                    credits: 2
+                };
+                addAuditLog('USER_LOGIN', `User ${emailInput || usernameInput} authenticated as User.`);
+            }
+
+            localStorage.setItem('saved_user', JSON.stringify(currentUser));
+            localStorage.setItem('saved_role', currentRole);
             updateNavbar();
-            showView('dashboard');
+            showView(currentRole === 'Mentor' ? 'mentor-dashboard' : 'dashboard');
         }
 
         function handleRegister(event) {
             event.preventDefault();
-            const name = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const randomId = Math.floor(1000 + Math.random() * 9000);
+            const name = document.getElementById('reg-name').value || 'สมาชิกใหม่';
+            const email = document.getElementById('reg-email').value || '';
+            const selectedRole = document.getElementById('reg-role-select').value; // 'User' or 'Mentor'
 
-            currentUser = {
-                id: `usr-${randomId}`,
-                memberCode: `SB-2026-${randomId}`,
-                name: name,
-                email: email,
-                tier: 'New Member',
-                credits: 2
+            currentRole = selectedRole;
+            currentUser = { 
+                id: 'usr-' + Date.now(), 
+                memberCode: (selectedRole === 'Mentor' ? 'SB-MENTOR-' : 'SB-USER-') + Math.floor(Math.random() * 9000 + 1000), 
+                name: name, 
+                email: email, 
+                tier: selectedRole === 'Mentor' ? 'Mentor Tier' : 'Standard', 
+                credits: 2 
             };
+            // เก็บบัญชีที่สมัครไว้ เพื่อให้ Mentor สามารถกลับเข้าสู่ระบบด้วยบัญชีเดิมได้
+            const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '[]');
+            const existingIndex = registeredUsers.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+            const accountRecord = { ...currentUser, password: document.getElementById('reg-password').value, role: selectedRole };
+            if (existingIndex >= 0) registeredUsers[existingIndex] = accountRecord;
+            else registeredUsers.push(accountRecord);
+            localStorage.setItem('registered_users', JSON.stringify(registeredUsers));
 
-            alert(`ลงทะเบียนสำเร็จ!\n\nชื่อ: ${name}\nรหัสสมาชิกของคุณคือ: ${currentUser.memberCode}\nรับฟรี 2 Time-Credits สำหรับทดลองใช้งาน`);
+            localStorage.setItem('saved_user', JSON.stringify(currentUser));
+            localStorage.setItem('saved_role', currentRole);
+            addAuditLog('USER_REGISTER', `New ${selectedRole} registered: ${currentUser.name}.`);
+            alert(`ลงทะเบียนสำเร็จด้วยสิทธิ์${selectedRole === 'Mentor' ? 'ผู้สอน (Mentor)' : 'ผู้เรียน (User)'}! รับฟรี 2 Time-Credits`);
             updateNavbar();
-            showView('dashboard');
+            showView(selectedRole === 'Mentor' ? 'mentor-dashboard' : 'dashboard');
         }
 
         function handleLogout() {
+            addAuditLog('USER_LOGOUT', `User logged out from platform.`);
             currentUser = null;
+            localStorage.removeItem('saved_user');
+            localStorage.removeItem('saved_role');
             updateNavbar();
-            showView('dashboard');
+            showView('auth');
         }
 
-        // Render Mentors (30+ Items)
-        function renderMentors() {
-            const grid = document.getElementById('mentor-grid');
-            const searchInput = document.getElementById('search-input').value.toLowerCase();
-            
-            const filtered = mentorsData.filter(m => 
-                m.name.toLowerCase().includes(searchInput) ||
-                m.title.toLowerCase().includes(searchInput) ||
-                m.skills.some(s => s.toLowerCase().includes(searchInput))
-            );
-
-            document.getElementById('mentor-count').innerText = filtered.length;
-            grid.innerHTML = '';
-
-            filtered.forEach(mentor => {
-                const cardHtml = `
-                    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <h3 class="font-bold text-lg text-slate-800">${mentor.name}</h3>
-                                <button onclick="openReviewModal('${mentor.id}')" class="bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-md border border-amber-200/60 transition flex items-center gap-1">
-                                    ★ ${mentor.rating.toFixed(1)} (${mentor.totalReviews} รีวิว)
-                                </button>
-                            </div>
-                            <p class="text-sm text-slate-500 mb-4">${mentor.title}</p>
-                            
-                            <div class="flex flex-wrap gap-1.5 mb-6">
-                                ${mentor.skills.map(skill => `
-                                    <span class="bg-slate-100 text-slate-600 text-xs px-2.5 py-1 rounded-full font-medium">
-                                        ${skill}
-                                    </span>
-                                `).join('')}
-                            </div>
-                        </div>
-
-                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                            <div>
-                                <span class="text-lg font-bold text-indigo-600">฿${mentor.hourlyRate}</span>
-                                <span class="text-xs text-slate-400"> / 30 นาที</span>
-                            </div>
-                            <button onclick="openBookingModal('${mentor.id}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-xl transition shadow-sm">
-                                จองเวลาปรึกษา
-                            </button>
-                        </div>
-                    </div>
-                `;
-                grid.innerHTML += cardHtml;
-            });
-        }
-
-        // Review Modal Logic
-        function openReviewModal(mentorId) {
-            const mentor = mentorsData.find(m => m.id === mentorId);
-            if (!mentor) return;
-
-            document.getElementById('review-mentor-name').innerText = mentor.name;
-            const container = document.getElementById('reviews-list-container');
-            container.innerHTML = '';
-
-            if (mentor.reviews && mentor.reviews.length > 0) {
-                mentor.reviews.forEach(r => {
-                    container.innerHTML += `
-                        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1">
-                            <div class="flex justify-between font-semibold text-slate-700">
-                                <span>คุณ ${r.reviewer}</span>
-                                <span class="text-amber-600">★ ${r.rating} / 5</span>
-                            </div>
-                            <p class="text-slate-600">${r.comment}</p>
-                        </div>
-                    `;
-                });
-            } else {
-                container.innerHTML = '<p class="text-xs text-slate-400 py-4 text-center">ยังไม่มีรีวิวข้อความสำหรับผู้เชี่ยวชาญท่านนี้</p>';
+        function openRBACView() {
+            if (!currentUser || currentRole !== 'Admin') {
+                alert('หน้านี้สำหรับผู้ดูแลระบบ (Admin) เท่านั้น');
+                return;
             }
-
-            document.getElementById('review-modal').classList.remove('hidden');
+            showView('rbac-admin');
         }
 
-        function closeReviewModal() {
-            document.getElementById('review-modal').classList.add('hidden');
-        }
-
-        // Booking Modal Logic
-        function openBookingModal(mentorId) {
-            if (!currentUser) {
-                alert('กรุณาเข้าสู่ระบบก่อนทำการจองเวลาปรึกษา');
+        function showMentorDashboard() {
+            if (!currentUser || currentRole !== 'Mentor') {
+                alert('กรุณาเข้าสู่ระบบด้วยบัญชี Mentor');
                 showView('auth');
                 return;
             }
 
-            selectedMentor = mentorsData.find(m => m.id === mentorId);
-            if (!selectedMentor) return;
+            const name = currentUser.name || 'ผู้สอน';
+            const email = currentUser.email || '-';
+            document.getElementById('mentor-dashboard-name').innerText = name;
+            document.getElementById('mentor-profile-name').innerText = name;
+            document.getElementById('mentor-profile-email').innerText = email;
 
-            document.getElementById('modal-mentor-id').value = selectedMentor.id;
-            document.getElementById('modal-mentor-name').innerText = selectedMentor.name;
-            document.getElementById('modal-cash-rate').innerText = `฿${selectedMentor.hourlyRate} / 30 นาที`;
-            
-            updatePaymentSummary();
+            // ค่าเริ่มต้นที่ปลอดภัยสำหรับ Mentor ใหม่ และสามารถนำไปเชื่อมฐานข้อมูลจริงภายหลังได้
+            const mentorStats = JSON.parse(localStorage.getItem('mentor_stats_' + currentUser.id) || '{}');
+            document.getElementById('mentor-income').innerText = `฿${Number(mentorStats.income || 0).toLocaleString('th-TH')}`;
+            document.getElementById('mentor-upcoming-sessions').innerText = mentorStats.sessions ?? 0;
+            document.getElementById('mentor-rating').innerText = `${Number(mentorStats.rating || 0).toFixed(1)} ★`;
+            document.getElementById('mentor-students').innerText = mentorStats.students ?? 0;
+
+            const sessionList = document.getElementById('mentor-session-list');
+            sessionList.innerHTML = `
+                <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800">
+                    <div class="text-sm font-bold text-white">ยังไม่มีเซสชันที่กำลังจะมาถึง</div>
+                    <div class="text-[11px] text-slate-500 font-mono mt-1">เมื่อมีผู้เรียนจองคิว รายการจะปรากฏที่นี่</div>
+                </div>
+            `;
+        }
+
+        function switchRoleView(roleName) {
+            currentRole = roleName;
+            updateNavbar();
+            renderRBACAdminDashboard();
+            alert(`สลับมุมมองสิทธิ์การใช้งานเป็น [${roleName}] เรียบร้อยแล้ว`);
+        }
+
+        function addAuditLog(action, details) {
+            const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+            auditLogs.unshift({ id: 'log-' + Date.now(), time: now, action: action, details: details });
+        }
+
+        function updatePriceSliderLabel() {
+            const val = document.getElementById('price-range-slider').value;
+            document.getElementById('price-slider-label').innerText = `สูงสุด ฿${val} บาท`;
+        }
+
+        function setExpertiseLevel(level) {
+            currentExpertiseFilter = level;
+            ['all', 'senior', 'expert', 'elite'].forEach(l => {
+                const btn = document.getElementById(`btn-exp-${l}`);
+                if (btn) btn.className = "flex-1 py-2 rounded-xl text-xs font-mono border border-slate-700 bg-slate-900 text-slate-400 hover:border-cyan-400 transition";
+            });
+            const activeBtn = document.getElementById(`btn-exp-${level.toLowerCase()}`);
+            if (activeBtn) activeBtn.className = "flex-1 py-2 rounded-xl text-xs font-mono border border-cyan-400 bg-cyan-950/50 text-cyan-300 transition";
+            renderMentors();
+        }
+
+        function renderMentors() {
+            const grid = document.getElementById('mentor-grid');
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const categoryFilter = document.getElementById('category-filter').value;
+            const genderFilter = document.getElementById('gender-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const maxPrice = parseInt(document.getElementById('price-range-slider').value);
+            const sortingType = document.getElementById('sorting-select').value;
+
+            let filtered = mentorsData.filter(m => {
+                const matchSearch = m.name.toLowerCase().includes(searchInput) || m.title.toLowerCase().includes(searchInput) || m.skills.some(s => s.toLowerCase().includes(searchInput));
+                const matchCategory = categoryFilter === 'ALL' || m.category === categoryFilter;
+                const matchGender = genderFilter === 'ALL' || m.gender === genderFilter;
+                const matchStatus = statusFilter === 'ALL' || (statusFilter === 'ONLINE' && m.online);
+                const matchPrice = m.hourlyRate <= maxPrice;
+                const matchExpertise = currentExpertiseFilter === 'ALL' || m.expertiseLevel === currentExpertiseFilter;
+                return matchSearch && matchCategory && matchGender && matchStatus && matchPrice && matchExpertise;
+            });
+
+            if (sortingType === 'highest-rated') filtered.sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating));
+            else if (sortingType === 'price-low-high') filtered.sort((a, b) => a.hourlyRate - b.hourlyRate);
+            else if (sortingType === 'most-popular') filtered.sort((a, b) => b.totalReviews - a.totalReviews);
+
+            document.getElementById('mentor-count').innerText = filtered.length;
+            grid.innerHTML = '';
+            filtered.forEach(mentor => {
+                const matchScore = calculateCompatibilityScore(mentor, searchInput);
+                const scoreBadgeColor = matchScore >= 90 ? 'text-emerald-400 bg-emerald-950/80 border-emerald-500/40' : (matchScore >= 80 ? 'text-cyan-400 bg-cyan-950/80 border-cyan-500/40' : 'text-purple-400 bg-purple-950/80 border-purple-500/40');
+                const statusBadge = mentor.online 
+                    ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-emerald-950/80 text-emerald-400 border border-emerald-500/40"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ออนไลน์ (Online)</span>`
+                    : `<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-slate-800/80 text-slate-400 border border-slate-700"><span class="w-2 h-2 rounded-full bg-slate-500"></span> ออฟไลน์ (Offline)</span>`;
+
+                grid.innerHTML += `
+                    <div class="glass-panel rounded-3xl p-6 hover:border-cyan-500/50 transition-all duration-300 flex flex-col justify-between group shadow-xl relative overflow-hidden">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="relative">
+                                        <img src="${mentor.avatar}" alt="${mentor.name}" class="w-14 h-14 rounded-2xl object-cover border border-cyan-500/40 shadow">
+                                        <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-slate-900 ${mentor.online ? 'bg-emerald-400' : 'bg-slate-500'}"></span>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <h3 class="font-bold text-base text-white truncate group-hover:text-cyan-400 transition cursor-pointer" onclick="openMentorProfile('${mentor.id}')">${mentor.name}</h3>
+                                        <div class="flex items-center gap-2 mt-1">
+                                            <span class="text-[10px] font-mono bg-purple-950 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30">${mentor.gender}</span>
+                                            <span class="text-[10px] font-mono bg-cyan-950 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/30">${mentor.expertiseLevel}</span>
+                                            <button onclick="openMentorProfile('${mentor.id}')" class="bg-amber-950/40 text-amber-400 border border-amber-500/30 text-xs font-mono px-2 py-0.5 rounded">★ ${mentor.rating}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between text-xs font-mono">
+                                <span class="text-slate-400">Matrix Compatibility:</span>
+                                <span class="px-2 py-0.5 rounded border ${scoreBadgeColor} font-bold">${matchScore}% Match</span>
+                            </div>
+                            <div class="mb-3">${statusBadge}</div>
+                            <p class="text-xs text-slate-400 mb-4 font-mono line-clamp-2">${mentor.title}</p>
+                            <div class="flex flex-wrap gap-1.5 mb-6">
+                                ${mentor.skills.map(s => `<span class="bg-slate-900/90 border border-slate-700/80 text-slate-300 text-xs px-3 py-1 rounded-full font-mono">${s}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                            <div><span class="text-lg font-bold text-cyan-400 font-mono">฿${mentor.hourlyRate}</span><span class="text-[10px] text-slate-500 font-mono"> / 30m</span></div>
+                            <div class="flex gap-2">
+                                <button onclick="openMentorProfile('${mentor.id}')" class="bg-slate-800 hover:bg-slate-700 text-cyan-300 text-xs font-mono px-3 py-2.5 rounded-xl transition">ดูโปรไฟล์</button>
+                                <button onclick="openBookingModal('${mentor.id}')" class="bg-cyan-500 hover:bg-cyan-400 text-black text-xs font-extrabold px-4 py-2.5 rounded-xl transition shadow-md tracking-wide">จอง</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function openMentorProfile(mentorId) {
+            const m = mentorsData.find(item => item.id === mentorId);
+            if (!m) return;
+            selectedMentor = m;
+
+            document.getElementById('profile-modal-avatar').src = m.avatar;
+            document.getElementById('profile-modal-name').innerText = m.name;
+            document.getElementById('profile-modal-gender').innerText = m.gender;
+            document.getElementById('profile-modal-expertise-badge').innerText = m.expertiseLevel;
+            document.getElementById('profile-modal-title').innerText = m.title;
+            document.getElementById('profile-modal-rating').innerText = m.rating;
+            document.getElementById('profile-modal-total-reviews').innerText = m.totalReviews;
+            document.getElementById('profile-modal-rate').innerText = m.hourlyRate;
+
+            const statusDot = document.getElementById('profile-modal-status-dot');
+            const statusText = document.getElementById('profile-modal-status-text');
+            if (m.online) {
+                statusDot.className = "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-slate-900 bg-emerald-400";
+                statusText.className = "text-xs font-mono mb-3 font-bold text-emerald-400";
+                statusText.innerText = "● สถานะ: ออนไลน์ พร้อมให้คำปรึกษาทันที";
+            } else {
+                statusDot.className = "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-slate-900 bg-slate-500";
+                statusText.className = "text-xs font-mono mb-3 font-bold text-slate-400";
+                statusText.innerText = "○ สถานะ: ออฟไลน์ (สามารถจองคิวล่วงหน้าได้)";
+            }
+
+            const skillsDiv = document.getElementById('profile-modal-skills');
+            skillsDiv.innerHTML = m.skills.map(s => `<span class="bg-slate-900 border border-slate-700 text-cyan-300 text-xs px-3 py-1.5 rounded-xl font-mono">${s}</span>`).join('');
+
+            const reviewsList = document.getElementById('profile-modal-reviews-list');
+            reviewsList.innerHTML = m.reviews.map(r => `
+                <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-xs font-mono space-y-1">
+                    <div class="flex justify-between text-amber-400">
+                        <span>${r.reviewer}</span>
+                        <span>${'★'.repeat(r.rating)}</span>
+                    </div>
+                    <p class="text-slate-300">${r.comment}</p>
+                </div>
+            `).join('');
+
+            document.getElementById('profile-calendar-date').value = new Date().toISOString().split('T')[0];
+            renderTimeSlots();
+
+            document.getElementById('profile-modal-book-btn').setAttribute('onclick', `closeMentorProfileModal(); openBookingModal('${m.id}')`);
+            document.getElementById('mentor-profile-modal').classList.remove('hidden');
+        }
+
+        function closeMentorProfileModal() {
+            document.getElementById('mentor-profile-modal').classList.add('hidden');
+        }
+
+        function renderTimeSlots() {
+            const container = document.getElementById('time-slots-container');
+            const slots = ['09:00 - 09:30', '10:00 - 10:30', '13:00 - 13:30', '15:00 - 15:30', '18:00 - 18:30', '20:00 - 20:30'];
+            container.innerHTML = slots.map((slot, idx) => `
+                <label class="p-2 rounded-xl border ${idx === 0 ? 'border-cyan-400 bg-cyan-950/40 text-cyan-300' : 'border-slate-700 bg-slate-900 text-slate-300'} text-[11px] font-mono text-center cursor-pointer hover:border-cyan-400 transition block">
+                    <input type="radio" name="profileSlot" value="${slot}" ${idx === 0 ? 'checked' : ''} class="sr-only">
+                    ${slot} น.
+                </label>
+            `).join('');
+        }
+
+        function sendPreConsultationChat() {
+            const input = document.getElementById('chat-input-msg');
+            const box = document.getElementById('chat-messages-box');
+            if (!input.value.trim()) return;
+
+            chatMessageCount++;
+            box.innerHTML += `<div class="text-purple-400"><strong>คุณ:</strong> ${input.value}</div>`;
+            const userMsg = input.value;
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            setTimeout(() => {
+                box.innerHTML += `<div class="text-cyan-400"><strong>${selectedMentor ? selectedMentor.name : 'เมนทอร์'}:</strong> รับทราบครับ ยินดีให้คำปรึกษาประเด็น "${userMsg}" สามารถกดจองเซสชันเพื่อเริ่มพูดคุยผ่าน Video Room ได้เลยครับ</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 800);
+        }
+
+        function openBookingModal(mentorId) {
+            const m = mentorsData.find(item => item.id === mentorId);
+            if (!m) return;
+            selectedMentor = m;
+
+            document.getElementById('modal-mentor-id').value = m.id;
+            document.getElementById('modal-mentor-name').innerText = m.name;
+            document.getElementById('booking-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('summary-gross').innerText = `฿${m.hourlyRate}`;
+            document.getElementById('summary-net').innerText = `฿${m.hourlyRate}`;
+            document.getElementById('pp-amount-text').innerText = `฿${m.hourlyRate}`;
+            if (currentUser) {
+                document.getElementById('user-credit-balance-text').innerText = currentUser.credits;
+            }
+
             document.getElementById('booking-modal').classList.remove('hidden');
         }
 
         function closeBookingModal() {
             document.getElementById('booking-modal').classList.add('hidden');
-            document.getElementById('booking-form').reset();
         }
 
-        function updatePaymentSummary() {
-            if (!selectedMentor) return;
+        function toggleGatewayDetails() {
+            const gateway = document.querySelector('input[name="paymentGateway"]:checked').value;
+            document.getElementById('box-promptpay').classList.add('hidden');
+            document.getElementById('box-card').classList.add('hidden');
+            document.getElementById('box-credit').classList.add('hidden');
 
-            const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
-            const grossEl = document.getElementById('summary-gross');
-            const feeEl = document.getElementById('summary-fee');
-            const netEl = document.getElementById('summary-net');
-
-            if (paymentType === 'CASH') {
-                const gross = selectedMentor.hourlyRate;
-                const fee = gross * 0.15;
-                grossEl.innerText = `฿${gross}`;
-                feeEl.innerText = `฿${fee.toFixed(0)} (15%)`;
-                netEl.innerText = `฿${gross}`;
-            } else {
-                grossEl.innerText = '1 Time-Credit';
-                feeEl.innerText = 'ไม่มีค่าธรรมเนียม';
-                netEl.innerText = '1 Time-Credit';
+            if (gateway === 'PROMPTPAY') {
+                document.getElementById('box-promptpay').classList.remove('hidden');
+            } else if (gateway === 'CREDIT_CARD') {
+                document.getElementById('box-card').classList.remove('hidden');
+            } else if (gateway === 'TIME_CREDIT') {
+                document.getElementById('box-credit').classList.remove('hidden');
             }
         }
 
-        function handleBookingSubmit(event) {
-            event.preventDefault();
-            
-            const paymentType = document.querySelector('input[name="paymentType"]:checked').value;
-            const timeSlot = document.getElementById('booking-time').value;
+        function applyCouponCode() {
+            const code = document.getElementById('coupon-code-input').value.trim().toUpperCase();
+            const feedback = document.getElementById('coupon-feedback-text');
+            if (code === 'B2B_CORP_50') {
+                feedback.className = "text-[11px] text-emerald-400 font-mono font-bold";
+                feedback.innerText = "✓ ใช้โค้ดส่วนลดสำเร็จ! ลด 50 บาทเรียบร้อย";
+                if (selectedMentor) {
+                    const discounted = Math.max(selectedMentor.hourlyRate - 50, 250);
+                    document.getElementById('summary-net').innerText = `฿${discounted}`;
+                    document.getElementById('pp-amount-text').innerText = `฿${discounted}`;
+                }
+            } else {
+                feedback.className = "text-[11px] text-rose-400 font-mono";
+                feedback.innerText = "✕ โค้ดส่วนลดไม่ถูกต้องหรือหมดอายุ";
+            }
+        }
 
-            if (paymentType === 'TIME_CREDIT') {
-                if (currentUser.credits < 1) {
-                    alert('คุณมี Time-Credit ไม่เพียงพอ! (ต้องการ 1 เครดิต)');
+        function handleRealPaymentCheckout(event) {
+            event.preventDefault();
+            const gateway = document.querySelector('input[name="paymentGateway"]:checked').value;
+            const dateVal = document.getElementById('booking-date').value;
+            const timeVal = document.getElementById('booking-time').value;
+
+            if (!timeVal) {
+                alert('กรุณาเลือกช่วงเวลาเซสชัน');
+                return;
+            }
+
+            if (gateway === 'TIME_CREDIT') {
+                if (!currentUser || currentUser.credits < 1) {
+                    alert('Time-Credits ของคุณไม่เพียงพอ กรุณาเติมเครดิตก่อนทำรายการ');
                     return;
                 }
                 currentUser.credits -= 1;
-                updateNavbar();
             }
 
-            alert(`ยืนยันการจองเรียบร้อยแล้ว!\n\nรหัสสมาชิกผู้จอง: ${currentUser.memberCode}\nชื่อผู้จอง: ${currentUser.name}\nผู้เชี่ยวชาญ: ${selectedMentor.name}\nช่วงเวลา: ${timeSlot}\nรูปแบบ: ${paymentType === 'CASH' ? 'ชำระเงินสด' : 'ใช้ 1 Time-Credit'}\n\nระบบส่งลิงก์ห้องสนทนาไปยังอีเมล ${currentUser.email} เรียบร้อยแล้ว`);
-            
+            const newBooking = {
+                id: 'b-' + Date.now(),
+                mentorId: selectedMentor.id,
+                mentorName: selectedMentor.name,
+                skill: selectedMentor.skills[0],
+                timeSlot: `${dateVal} (${timeVal})`,
+                type: gateway,
+                status: 'Confirmed',
+                alertTriggered: false,
+                summary: null,
+                reviewed: false
+            };
+
+            userBookings.unshift(newBooking);
+            addAuditLog('PAYMENT_CHECKOUT', `Successfully booked session with ${selectedMentor.name} via ${gateway}.`);
+            notifications.unshift({
+                id: 'n-' + Date.now(),
+                title: 'ยืนยันการจองและชำระเงินสำเร็จ',
+                desc: `นัดหมายกับ ${selectedMentor.name} วันที่ ${dateVal} เรียบร้อย`,
+                time: 'เมื่อสักครู่',
+                read: false
+            });
+
             closeBookingModal();
+            updateNavbar();
+            showView('bookings');
+            alert('ชำระเงินและยืนยันการจองสำเร็จ! ระบบเปิดห้องประชุม Virtual Meeting Room เรียบร้อย');
         }
 
-        // Initialize App
-        document.addEventListener('DOMContentLoaded', () => {
+        function openTopupModal() {
+            document.getElementById('topup-modal').classList.remove('hidden');
+        }
+
+        function closeTopupModal() {
+            document.getElementById('topup-modal').classList.add('hidden');
+        }
+
+        function processTopupPayment(creditsToAdd, pricePaid) {
+            if (!currentUser) {
+                currentUser = { id: 'usr-guest', name: 'ผู้เยี่ยมชม', credits: 0 };
+            }
+            currentUser.credits += creditsToAdd;
+            addAuditLog('TOPUP_CREDITS', `Topup ${creditsToAdd} credits for ฿${pricePaid}.`);
+            notifications.unshift({
+                id: 'n-' + Date.now(),
+                title: 'เติม Time-Credits สำเร็จ',
+                desc: `ได้รับเพิ่ม ${creditsToAdd} Credits (ยอดชำระ ฿${pricePaid})`,
+                time: 'เมื่อสักครู่',
+                read: false
+            });
+            closeTopupModal();
             updateNavbar();
-            showView('dashboard');
-        });
+            alert(`เติม Time-Credits สำเร็จ! ปัจจุบันคุณมี ${currentUser.credits} Credits`);
+        }
+
+        function renderBookings() {
+            const container = document.getElementById('bookings-list-container');
+            if (userBookings.length === 0) {
+                container.innerHTML = `<div class="glass-panel p-8 rounded-3xl text-center text-slate-400 font-mono text-xs">ยังไม่มีประวัติการจองเซสชันในระบบ</div>`;
+                return;
+            }
+
+            container.innerHTML = userBookings.map(b => `
+                <div class="glass-panel p-6 rounded-3xl border-cyan-500/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 font-mono">
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold ${b.status === 'Confirmed' ? 'bg-cyan-950 text-cyan-400 border border-cyan-500/30' : 'bg-emerald-950 text-emerald-400 border border-emerald-500/30'}">● สถานะ: ${b.status}</span>
+                            <span class="text-xs text-purple-400 bg-purple-950/50 px-2.5 py-1 rounded border border-purple-500/30">Payment: ${b.type}</span>
+                        </div>
+                        <h3 class="font-bold text-base text-white">นัดหมายปรึกษากับ: <span class="text-cyan-400">${b.mentorName}</span></h3>
+                        <p class="text-xs text-slate-400">หัวข้อ: ${b.skill} • วันเวลา: ${b.timeSlot}</p>
+                        ${b.summary ? `<div class="p-3 bg-slate-900 rounded-xl border border-slate-800 text-xs text-cyan-300 mt-2">✨ <strong>AI Summary:</strong> ${b.summary}</div>` : ''}
+                    </div>
+                    <div class="flex flex-wrap gap-2 w-full md:w-auto">
+                        <button onclick="openMeetingRoomModal('${b.mentorName}')" class="flex-1 md:flex-none bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-extrabold px-4 py-2.5 rounded-xl text-xs transition shadow-lg">
+                            🎥 Join Cyber Meeting Room
+                        </button>
+                        ${!b.reviewed ? `<button onclick="openFeedbackModal('${b.id}')" class="flex-1 md:flex-none bg-amber-500 hover:bg-amber-400 text-black font-bold px-4 py-2.5 rounded-xl text-xs transition">⭐ ประเมินผล</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openMeetingRoomModal(mentorName) {
+            document.getElementById('meeting-room-title').innerText = `Cyber Consulting Room with ${mentorName}`;
+            document.getElementById('meeting-room-modal').classList.remove('hidden');
+        }
+
+        function closeMeetingRoomModal() {
+            document.getElementById('meeting-room-modal').classList.add('hidden');
+        }
+
+        function generateAISessionSummary() {
+            const box = document.getElementById('ai-transcript-box');
+            box.innerHTML += `<div class="text-purple-400 font-bold">[AI Summary Generated]: แนะนำการปรับปรุงโค้ด Google Apps Script ในฟังก์ชัน onEdit() และการเชื่อมต่อตาราง SKU คลังสินค้าเรียบร้อย สมบูรณ์แบบสำหรับโปรเจกต์วิทยานิพนธ์</div>`;
+            box.scrollTop = box.scrollHeight;
+            if (userBookings.length > 0) {
+                userBookings[0].summary = "ปรับปรุง Apps Script ตัดสต็อกอัตโนมัติและออกแบบฐานข้อมูล SKU สำเร็จ";
+            }
+        }
+
+        function openFeedbackModal(bookingId) {
+            activeFeedbackBookingId = bookingId;
+            document.getElementById('feedback-modal').classList.remove('hidden');
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedback-modal').classList.add('hidden');
+        }
+
+        function submitSessionFeedback() {
+            const rating = document.getElementById('feedback-rating').value;
+            const comment = document.getElementById('feedback-comment').value;
+            const target = userBookings.find(b => b.id === activeFeedbackBookingId);
+            if (target) {
+                target.reviewed = true;
+            }
+            closeFeedbackModal();
+            renderBookings();
+            alert('ส่งรีวิวสำเร็จ! คะแนนและข้อเสนอแนะถูกอัปเดตเข้าสู่โปรไฟล์เมนทอร์เรียบร้อย');
+        }
+
+        function openPreAssessmentModal() {
+            document.getElementById('pre-assessment-modal').classList.remove('hidden');
+        }
+
+        function closePreAssessmentModal() {
+            document.getElementById('pre-assessment-modal').classList.add('hidden');
+        }
+
+        function submitPreAssessment() {
+            closePreAssessmentModal();
+            alert('ผลประเมินทักษะผ่าน AI: ระดับความเชี่ยวชาญ [Advanced Intermediate] • ระบบได้ทำการปรับแต่งเรตติ้งความเหมาะสม (Compatibility Score) ของเมนทอร์สาย Apps Script & WMS ให้คุณเรียบร้อยแล้ว!');
+        }
+
+        function openETaxModal() {
+            document.getElementById('etax-modal').classList.remove('hidden');
+        }
+
+        function closeETaxModal() {
+            document.getElementById('etax-modal').classList.add('hidden');
+        }
+
+        function downloadETaxPDF() {
+            const name = document.getElementById('etax-name').value || (currentUser?.name || 'ผู้เยี่ยมชม');
+            const taxid = document.getElementById('etax-taxid').value || '1234567890123';
+            alert(`สร้างและดาวน์โหลดใบกำกับภาษีอิเล็กทรอนิกส์ (e-Tax) PDF สำหรับ ${name} (Tax ID: ${taxid}) สำเร็จเรียบร้อย!`);
+            closeETaxModal();
+        }
+
+        function updateChecklistProgress() {
+            const item4 = document.getElementById('check-item-4').checked;
+            alert(item4 ? 'ยอดเยี่ยม! ทำเครื่องหมายเสร็จสิ้นภารกิจที่ 4 แล้ว' : 'อัปเดตสถานะ Checklist เรียบร้อย');
+        }
+
+        function runAICustomPromptMatcher() {
+            const promptText = document.getElementById('ai-custom-prompt-input').value.trim();
+            const resDiv = document.getElementById('ai-match-result');
+            if (!promptText) {
+                alert('กรุณากรอก Custom Prompt ก่อนกดประมวลผล');
+                return;
+            }
+            resDiv.classList.remove('hidden');
+            resDiv.innerHTML = `
+                <div class="p-4 bg-purple-950/40 rounded-2xl border border-purple-500/30 font-mono text-xs text-purple-200 space-y-2">
+                    <div class="font-bold text-purple-400">⚡ AI API Analysis Result:</div>
+                    <p>วิเคราะห์หัวข้อ: "${promptText}"</p>
+                    <p>• เมนทอร์ผู้เชี่ยวชาญแนะนำสูงสุด: <strong>ดนัย สุขเกษม (Apps Script & WMS)</strong></p>
+                    <p>• ความเข้ากันได้ (Match Score): <span class="text-emerald-400 font-bold">98.5% (High Match)</span></p>
+                    <p>• ข้อเสนอแนะ: เหมาะสำหรับการนัดหมายเซสชัน 30 นาทีเพื่อออกแบบสถาปัตยกรรมระบบ</p>
+                </div>
+            `;
+        }
+
+        function generateCustomRoadmap() {
+            const topic = document.getElementById('ai-custom-roadmap-topic').value.trim();
+            const resultBox = document.getElementById('ai-roadmap-result');
+            if (!topic) {
+                alert('กรุณาระบุหัวข้อเป้าหมายอิสระ');
+                return;
+            }
+            resultBox.classList.remove('hidden');
+            resultBox.innerHTML = `
+                <div class="font-bold text-cyan-400 text-sm mb-1">🚀 AI Generated Learning Roadmap: [${topic}]</div>
+                <div class="space-y-1.5 text-slate-300">
+                    <div><strong>Phase 1:</strong> ศึกษาโครงสร้างพื้นฐานและหลักการออกแบบระบบ (Foundations & Schema)</div>
+                    <div><strong>Phase 2:</strong> พัฒนาฟังก์ชันตรรกะและการเขียนโค้ดอัตโนมัติ (Core Logic & Automation)</div>
+                    <div><strong>Phase 3:</strong> เชื่อมต่อ User Interface และระบบแจ้งเตือน (UI Integration & Notifications)</div>
+                    <div><strong>Phase 4:</strong> ทดสอบระบบ Security Audit และปรึกษากับเมนทอร์ (Testing & Expert Review)</div>
+                </div>
+            `;
+        }
+
+        function renderRBACUserRows() {
+            const users = [
+                {
+                    name: currentUser?.name || 'mameemumaa',
+                    email: currentUser?.email || 'admin@test.com',
+                    role: 'Admin'
+                }
+            ];
+
+            const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '[]');
+            registeredUsers.forEach(user => {
+                if (!users.some(u => u.email.toLowerCase() === (user.email || '').toLowerCase())) {
+                    users.push({
+                        name: user.name || 'ผู้ใช้งาน',
+                        email: user.email || '-',
+                        role: user.role || 'User'
+                    });
+                }
+            });
+
+            // ตัวอย่าง Mentor เดิมของระบบยังคงแสดงได้ แต่ไม่ผูกกับชื่อ Admin แบบฮาร์ดโค้ด
+            if (!users.some(u => u.email === 'mentor.danai@test.com')) {
+                users.push({
+                    name: 'ดนัย สุขเกษม',
+                    email: 'mentor.danai@test.com',
+                    role: 'Mentor'
+                });
+            }
+
+            return users.map(user => {
+                const roleClass = user.role === 'Admin'
+                    ? 'bg-amber-950 text-amber-400 border-amber-500/30'
+                    : user.role === 'Mentor'
+                        ? 'bg-purple-950 text-purple-400 border-purple-500/30'
+                        : 'bg-cyan-950 text-cyan-400 border-cyan-500/30';
+
+                return `
+                    <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex justify-between items-center gap-3">
+                        <div class="min-w-0">
+                            <span class="text-white font-bold block truncate">${user.name}</span>
+                            <span class="block text-[10px] text-slate-400 truncate">${user.email}</span>
+                        </div>
+                        <span class="shrink-0 px-2.5 py-1 rounded ${roleClass} font-bold">${user.role}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderRBACAdminDashboard() {
+            const container = document.getElementById('rbac-dynamic-content');
+            document.getElementById('current-rbac-role-badge').innerText = `🛡️ ${currentRole.toUpperCase()} / ENTERPRISE AUDITOR`;
+
+            if (currentRole === 'Admin') {
+                container.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-6 rounded-3xl border-amber-500/30 space-y-4">
+                            <h3 class="font-bold text-base text-white flex items-center gap-2"><span>🛡️ ระบบจัดการผู้ใช้งาน (User & Role Management)</span></h3>
+                            <p class="text-xs text-slate-400 font-mono">สิทธิ์ Admin: สามารถจัดการ ย้ายบทบาท หรือระงับบัญชีผู้ใช้งานในระบบได้ทันที</p>
+                            <div class="space-y-2 font-mono text-xs">
+                                ${renderRBACUserRows()}
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-3xl border-amber-500/30 space-y-4">
+                            <h3 class="font-bold text-base text-white flex items-center gap-2"><span>⚖️ ระบบบริหารข้อพิพาท (Dispute Arbitration Hub)</span></h3>
+                            <p class="text-xs text-slate-400 font-mono">ตรวจสอบและตัดสินกรณีผู้เรียนขอคืนเครดิตหรือเกิดข้อพิพาทในเซสชัน</p>
+                            <div class="p-4 bg-slate-900 rounded-xl border border-slate-800 space-y-2 font-mono text-xs">
+                                <div class="text-cyan-400 font-bold">ไม่มีข้อพิพาทค้างในระบบ (Zero Disputes)</div>
+                                <p class="text-slate-400 text-[11px]">เซสชันทั้งหมดดำเนินไปด้วยความเรียบร้อยและผ่านการตรวจสอบอัตโนมัติ</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-6 sm:p-8 rounded-3xl border-amber-500/30 space-y-4 font-mono text-xs">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <h3 class="font-bold text-sm text-amber-400">📋 ระบบตรวจสอบบันทึกองค์กร (Enterprise System Audit Log)</h3>
+                            <button onclick="alert('ดาวน์โหลดไฟล์ System Audit Log สำเร็จ')" class="bg-slate-800 hover:bg-slate-700 text-amber-300 px-3 py-1.5 rounded-lg transition">📥 Export Audit Logs</button>
+                        </div>
+                        <div class="space-y-2 max-h-64 overflow-y-auto pr-2">
+                            ${auditLogs.map(log => `
+                                <div class="p-3 bg-slate-900 rounded-xl border border-slate-800 flex flex-col sm:flex-row justify-between gap-2">
+                                    <div><span class="text-cyan-400 font-bold">[${log.action}]</span> <span class="text-slate-300">${log.details}</span></div>
+                                    <span class="text-slate-500 text-[10px] whitespace-nowrap">${log.time}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            } else if (currentRole === 'Mentor') {
+                container.innerHTML = `
+                    <div class="glass-panel p-6 rounded-3xl border-purple-500/30 space-y-4 font-mono text-xs">
+                        <h3 class="font-bold text-base text-white">👨‍🏫 มุมมองผู้ให้คำปรึกษา (Mentor Portal)</h3>
+                        <p class="text-slate-400">จัดการตารางเวลาว่าง กำหนดเรตราคาค่าปรึกษา และดูสรุปรายได้สะสมประจำเดือน</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-1">
+                                <span class="text-slate-400">รายได้สะสมเดือนนี้:</span>
+                                <div class="text-2xl font-black text-emerald-400">฿12,450</div>
+                            </div>
+                            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-1">
+                                <span class="text-slate-400">เซสชันที่ต้องสอน:</span>
+                                <div class="text-2xl font-black text-cyan-400">3 เซสชัน</div>
+                            </div>
+                            <div class="p-4 bg-slate-900 rounded-2xl border border-slate-800 space-y-1">
+                                <span class="text-slate-400">คะแนนรีวิวเฉลี่ย:</span>
+                                <div class="text-2xl font-black text-amber-400">4.9 ★</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="glass-panel p-6 rounded-3xl border-cyan-500/30 space-y-4 font-mono text-xs">
+                        <h3 class="font-bold text-base text-white">👤 มุมมองผู้รับคำปรึกษา (User Portal)</h3>
+                        <p class="text-slate-400">คุณมีสิทธิ์ในการค้นหาเมนทอร์ จองคิว ชำระเงิน และติดตามเป้าหมายการเรียนรู้ (Learning Goals)</p>
+                        <button onclick="showView('dashboard')" class="bg-cyan-500 hover:bg-cyan-400 text-black font-bold px-4 py-2.5 rounded-xl transition">กลับสู่หน้าค้นหาเมนทอร์หลัก ⚡</button>
+                    </div>
+                `;
+            }
+        }
+
+        window.onload = function() {
+            const saved = localStorage.getItem('saved_user');
+            const savedRole = localStorage.getItem('saved_role');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                currentRole = savedRole || 'User';
+            } else {
+                currentUser = { 
+                    id: 'usr-admin-default', 
+                    memberCode: 'SB-CYBER-ADMIN', 
+                    name: 'mameemumaa', 
+                    email: 'admin@test.com', 
+                    tier: 'Cyber Elite', 
+                    credits: 10 
+                };
+                currentRole = 'Admin';
+            }
+            updateNavbar();
+            renderMentors();
+        };
     </script>
 </body>
 </html>
